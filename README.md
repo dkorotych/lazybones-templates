@@ -1,6 +1,6 @@
 ##Lazybones Templates
 
-This project holds a set of templates to be used with [Lazybones][]
+This project holds a set of templates to be used with [Lazybones][].
 The current list contains the following templates
 
  * [maven-quickstart][]: Quick start a base [Maven][] application
