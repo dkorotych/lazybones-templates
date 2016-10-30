@@ -12,18 +12,14 @@ buildscript {
 
 apply plugin: 'uk.co.cacoethes.lazybones-templates'
 
-//if (!project.hasProperty('bintrayUsername')) ext.bintrayUsername = ''
-//if (!project.hasProperty('bintrayApiKey')) ext.bintrayApiKey = ''
-
 lazybones {
-//    repositoryName = "<account>/<templates-repo>"
-//    repositoryUrl = 'https://api.bintray.com/content/aalmiray/kordamp'
-
-//    repositoryUsername = bintrayUsername
-//    repositoryApiKey = bintrayApiKey
-
+    repositoryName = "dkorotych/lazybones-templates"
     licenses = ["Apache-2.0"]
     vcsUrl = "https://github.com/dkorotych/lazybones-templates"
+    if (project.hasProperty("bintrayUsername") && project.hasProperty("bintrayApiKey")) {
+        repositoryUsername = project.bintrayUsername
+        repositoryApiKey = project.bintrayApiKey
+    }
 }
 
 task wrapper(type: Wrapper) {
