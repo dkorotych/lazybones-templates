@@ -1,5 +1,7 @@
 ##Lazybones Templates
 
+[![Build Status](https://travis-ci.org/dkorotych/lazybones-templates.svg?branch=master)](https://travis-ci.org/dkorotych/lazybones-templates)
+
 This project holds a set of templates to be used with [Lazybones][].
 The current list contains the following templates
 
