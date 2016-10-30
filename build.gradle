@@ -1,0 +1,31 @@
+buildscript {
+    repositories {
+        mavenCentral()
+        jcenter()
+        maven { url 'http://dl.bintray.com/pledbrook/plugins' }
+    }
+
+    dependencies {
+        classpath 'uk.co.cacoethes:lazybones-gradle:1.2.4'
+    }
+}
+
+apply plugin: 'uk.co.cacoethes.lazybones-templates'
+
+//if (!project.hasProperty('bintrayUsername')) ext.bintrayUsername = ''
+//if (!project.hasProperty('bintrayApiKey')) ext.bintrayApiKey = ''
+
+lazybones {
+//    repositoryName = "<account>/<templates-repo>"
+//    repositoryUrl = 'https://api.bintray.com/content/aalmiray/kordamp'
+
+//    repositoryUsername = bintrayUsername
+//    repositoryApiKey = bintrayApiKey
+
+    licenses = ["Apache-2.0"]
+    vcsUrl = "https://github.com/dkorotych/lazybones-templates"
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '3.1'
+}
