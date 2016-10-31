@@ -20,6 +20,8 @@ lazybones {
         repositoryUsername = project.bintrayUsername
         repositoryApiKey = project.bintrayApiKey
     }
+
+    template "maven-quickstart" includes "logback-support"
 }
 
 task wrapper(type: Wrapper) {

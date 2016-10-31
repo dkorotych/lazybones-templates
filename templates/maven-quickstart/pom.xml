@@ -95,7 +95,6 @@
                         <compilerArguments>
                             <Xmaxerrs>1000</Xmaxerrs>
                             <Xlint/>
-                            <Xlint:-path/>
                             <Averbose>true</Averbose>
                         </compilerArguments>
                     </configuration>
