@@ -34,6 +34,9 @@ import java.util.stream.StreamSupport;
  */
 public final class CollectionUtils {
 
+    /**
+     * Hidden constructor.
+     */
     private CollectionUtils() {
     }
 
@@ -58,18 +61,21 @@ public final class CollectionUtils {
     }
 
     /**
-     * Returns {@code true} if this collection is {@code null} or it contains no elements.
+     * Returns {@code true} if this collection is {@code null} or it contains no
+     * elements.
      *
      * @param collection a group of objects
-     * @return {@code true}, if this collection is {@code null} or it contains no elements
+     * @return {@code true}, if this collection is {@code null} or it contains
+     *     no elements
      */
     public static boolean isNullOrEmpty(final Collection<?> collection) {
         return collection == null || collection.isEmpty();
     }
 
     /**
-     * Return the "safe" list. This method never returns a value of {@code null}, if the input list is equal to
-     * {@code null}, then instead it will return an empty list
+     * Return the "safe" list. This method never returns a value of
+     * {@code null}, if the input list is equal to {@code null}, then instead it
+     * will return an empty list
      *
      * @param <T> Type of list of elements
      * @param list List of elements
@@ -90,8 +96,12 @@ public final class CollectionUtils {
      */
     @SafeVarargs
     @SuppressWarnings("varargs")
-    public static <T> List<T> getSafeList(T... items) {
-        return items == null ? Collections.<T>emptyList() : Arrays.asList(items);
+    public static <T> List<T> getSafeList(final T... items) {
+        if (items == null) {
+            return Collections.<T>emptyList();
+        } else {
+            return Arrays.asList(items);
+        }
     }
 
     /**
@@ -99,13 +109,15 @@ public final class CollectionUtils {
      *
      * @param <I> Type of objects for input collection
      * @param <O> Type of objects for output collection
-     * @param iterable The sequence of elements to convert. If the input sequence is empty, then the resulting
-     * collection will be empty
-     * @param transformer The conversion function. If the transfer function is not set, the resulting collection
-     * will be empty
+     * @param iterable The sequence of elements to convert. If the input
+     *     sequence is empty, then the resulting collection will be empty
+     * @param transformer The conversion function. If the transfer function is
+     *     not set, the resulting collection will be empty
      * @return Reformed collection of input elements
      */
-    public static <I, O> List<O> transformWithoutNull(Iterable<I> iterable, Function<I, O> transformer) {
+    public static <I, O> List<O> transformWithoutNull(
+            final Iterable<I> iterable,
+            final Function<I, O> transformer) {
         return StreamSupport
                 .stream(Optional
                         .ofNullable(iterable)

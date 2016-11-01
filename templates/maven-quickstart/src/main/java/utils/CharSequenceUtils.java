@@ -26,38 +26,47 @@ import java.util.function.UnaryOperator;
  */
 public final class CharSequenceUtils {
 
+    /**
+     * Hidden constructor.
+     */
     private CharSequenceUtils() {
     }
 
     /**
-     * Returns {@code true} if this sequence is {@code null} or it contains no elements.
+     * Returns {@code true} if this sequence is {@code null} or it contains no
+     * elements.
      *
      * @param sequence the character sequence, may be null
-     * @return {@code true}, if this sequence is {@code null} or it contains no elements
+     * @return {@code true}, if this sequence is {@code null} or it contains no
+     *     elements
      */
-    public static boolean isEmpty(CharSequence sequence) {
+    public static boolean isEmpty(final CharSequence sequence) {
         return nullToEmpty(sequence).length() == 0;
     }
 
     /**
-     * Returns {@code true} if this sequence is {@code null} or it contains only whitespaces symbols.
+     * Returns {@code true} if this sequence is {@code null} or it contains only
+     * whitespaces symbols.
      *
      * @param sequence the character sequence, may be null
-     * @return {@code true}, if this sequence is {@code null} or it contains only whitespaces.
+     * @return {@code true}, if this sequence is {@code null} or it contains
+     *     only whitespaces.
      * @see #trim(java.lang.CharSequence)
      */
-    public static boolean isBlank(CharSequence sequence) {
+    public static boolean isBlank(final CharSequence sequence) {
         return isEmpty(sequence) || isEmpty(trim(sequence));
     }
 
     /**
-     * Returns {@code true} if this sequence contains any not whitespaces symbols.
+     * Returns {@code true} if this sequence contains any not whitespaces
+     * symbols.
      *
      * @param sequence the character sequence, may be null
-     * @return {@code true}, if this sequence contains any not whitespaces symbols.
+     * @return {@code true}, if this sequence contains any not whitespaces
+     *     symbols.
      * @see #isBlank(java.lang.CharSequence)
      */
-    public static boolean isNotBlank(CharSequence sequence) {
+    public static boolean isNotBlank(final CharSequence sequence) {
         return !isBlank(sequence);
     }
 
@@ -67,38 +76,47 @@ public final class CharSequenceUtils {
      * @param sequence the character sequence, may be null
      * @return input sequence or empty string if sequence is {@code null}
      */
-    public static CharSequence nullToEmpty(CharSequence sequence) {
-        return sequence == null ? "" : sequence;
+    public static CharSequence nullToEmpty(final CharSequence sequence) {
+        if (sequence == null) {
+            return "";
+        } else {
+            return sequence;
+        }
     }
 
     /**
-     * Returns a character sequence whose value is this sequence, with any leading and trailing whitespace removed.
+     * Returns a character sequence whose value is this sequence, with any
+     * leading and trailing whitespace removed.
      *
      * @param sequence the character sequence, may be null
      * @return a character sequence without any leading and trailing whitespace.
      * @see String#trim()
      */
-    public static CharSequence trim(CharSequence sequence) {
+    public static CharSequence trim(final CharSequence sequence) {
         if (sequence != null) {
             int length = sequence.length();
             int start = 0;
-            while (start < length && trimThisChar(sequence.charAt(start))) {
+            while (start < length
+                    && trimThisChar(sequence.charAt(start))) {
                 start++;
             }
-            while (start < length && trimThisChar(sequence.charAt(length - 1))) {
+            while (start < length
+                    && trimThisChar(sequence.charAt(length - 1))) {
                 length--;
             }
-            return start > 0 || length < sequence.length()
-                    ? sequence.subSequence(start, length)
-                    : sequence;
+            if (start > 0 || length < sequence.length()) {
+                return sequence.subSequence(start, length);
+            } else {
+                return sequence;
+            }
         }
         return null;
     }
 
     /**
-     * Capitalizes a character sequence changing the first letter to title case as per
-     * {@link Character#toTitleCase(char)}. No other letters are changed. A {@code null} input sequence returns
-     * {@code null}.
+     * Capitalizes a character sequence changing the first letter to title case
+     * as per {@link Character#toTitleCase(char)}. No other letters are changed.
+     * A {@code null} input sequence returns {@code null}.
      * <pre>
      * CharSequenceUtils.capitalize(null)  = null
      * CharSequenceUtils.capitalize("")    = ""
@@ -107,17 +125,20 @@ public final class CharSequenceUtils {
      * </pre>
      *
      * @param sequence the character sequence to capitalize, may be null
-     * @return the capitalized character sequence, {@code null} if null String input
+     * @return the capitalized character sequence, {@code null} if null String
+     *     input
      * @see #uncapitalize(java.lang.CharSequence)
      */
     public static CharSequence capitalize(final CharSequence sequence) {
-        return modifyFirstChar(sequence, Character::isTitleCase, Character::toTitleCase);
+        return modifyFirstChar(sequence,
+                Character::isTitleCase,
+                Character::toTitleCase);
     }
 
     /**
-     * Uncapitalizes a character sequence changing the first letter to title case as per
-     * {@link Character#toLowerCase(char)}. No other letters are changed. A {@code null} input String returns
-     * {@code null}.
+     * Uncapitalizes a character sequence changing the first letter to title
+     * case as per {@link Character#toLowerCase(char)}. No other letters are
+     * changed. A {@code null} input String returns {@code null}.
      * <pre>
      * CharSequenceUtils.uncapitalize(null)  = null
      * CharSequenceUtils.uncapitalize("")    = ""
@@ -126,20 +147,38 @@ public final class CharSequenceUtils {
      * </pre>
      *
      * @param sequence the character sequence to uncapitalize, may be null
-     * @return the uncapitalized character sequence, {@code null} if null String input
+     * @return the uncapitalized character sequence, {@code null} if null String
+     *     input
      * @see #capitalize(java.lang.CharSequence)
      */
     public static CharSequence uncapitalize(final CharSequence sequence) {
-        return modifyFirstChar(sequence, Character::isLowerCase, Character::toLowerCase);
+        return modifyFirstChar(sequence,
+                Character::isLowerCase,
+                Character::toLowerCase);
     }
 
-    private static boolean trimThisChar(char character) {
+    /**
+     * Return {@code true}, if the searched character is a whitespace character.
+     *
+     * @param character Character
+     * @return {@code true}, if the searched character is a whitespace
+     */
+    private static boolean trimThisChar(final char character) {
         return character <= ' '
                 || character == '\u00A0';
     }
 
-    private static CharSequence modifyFirstChar(CharSequence sequence, Predicate<Character> predicate,
-            UnaryOperator<Character> processing) {
+    /**
+     * Modify the first character of the input string.
+     * @param sequence the character sequence to modification
+     * @param predicate function to check of the first character to the need for
+     *     modification
+     * @param processing function of modification
+     * @return The altered sequence
+     */
+    private static CharSequence modifyFirstChar(final CharSequence sequence,
+            final Predicate<Character> predicate,
+            final UnaryOperator<Character> processing) {
         if (isEmpty(sequence)) {
             return sequence;
         }
