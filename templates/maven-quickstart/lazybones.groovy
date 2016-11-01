@@ -19,6 +19,18 @@ import java.nio.file.Path
 import java.nio.file.attribute.BasicFileAttributes
 import java.text.SimpleDateFormat
 
+def askPredefined(String message, String defaultValue, List<String> answers, String property) {
+    message = "${message}. Choices are \'${answers.join('\', \'')}\' [${defaultValue}]: "
+    answers = answers.each {
+        it.toLowerCase()
+    }
+    answer = ''
+    while (!answers.contains(answer)) {
+        answer = ask(message, defaultValue, property).toLowerCase()
+    }
+    return answer
+}
+
 // Disable debug messages from HandlebarsTemplateEngine
 context = (LoggerContext) LoggerFactory.getILoggerFactory();
 new ByteArrayInputStream(
@@ -75,15 +87,38 @@ if (properties.github == '[Y/n]' || properties.github == 'Y' || properties.githu
     def repo = "https://github.com/${username}/${properties.artifactId}"
     properties.url = repo
     properties.issueManagement = [
-        "url": "${repo}/issues",
+        "url"   : "${repo}/issues",
         "system": "GitHub"
     ]
     properties.scm = [
-        "url": "${repo}.git",
-        "developerConnection" : "scm:git:git@github.com:${username}/${properties.artifactId}.git"
+        "url"                : "${repo}.git",
+        "developerConnection": "scm:git:git@github.com:${username}/${properties.artifactId}.git"
     ]
 } else {
     properties.github = false
+}
+
+properties.checkstyleConfig = askPredefined("Define value for checkstyle configuration", 'custom', ['custom', 'sun', 'google'], "checkstyleConfig")
+switch (properties.checkstyleConfig) {
+    case 'custom':
+        properties.checkstyle = [
+            'configLocation'      : '${project.basedir}/config/checkstyle/checkstyle.xml',
+            'suppressionsLocation': '${project.basedir}/config/checkstyle/checkstyle-suppressions.xml'
+        ]
+        break
+    case 'sun':
+        properties.checkstyle = [
+            'configLocation': 'sun_checks.xml'
+        ]
+        break
+    case 'google':
+        properties.checkstyle = [
+            'configLocation': 'google_checks.xml'
+        ]
+        break
+}
+if (properties.checkstyleConfig != 'custom') {
+    new File(projectDir, 'config/checkstyle').deleteDir()
 }
 
 // Create sources directories

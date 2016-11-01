@@ -163,8 +163,10 @@
                     <configuration>
                         <includeResources>false</includeResources>
                         <includeTestResources>false</includeTestResources>
-                        <configLocation>${project.basedir}/config/checkstyle/checkstyle.xml</configLocation>
-                        <suppressionsLocation>${project.basedir}/config/checkstyle/checkstyle-suppressions.xml</suppressionsLocation>
+                        <configLocation>{{checkstyle.configLocation}}</configLocation>
+                        {{#if checkstyle.suppressionsLocation ~}}
+                        <suppressionsLocation>{{checkstyle.suppressionsLocation}}</suppressionsLocation>
+                        {{/if ~}}
                         <excludes>**/generated-sources/</excludes>
                     </configuration>
                     <dependencies>
