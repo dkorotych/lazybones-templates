@@ -1,5 +1,8 @@
+import java.nio.file.Files
+
 buildscript {
     repositories {
+        mavenLocal()
         mavenCentral()
         jcenter()
         maven { url 'http://dl.bintray.com/pledbrook/plugins' }
@@ -12,6 +15,7 @@ buildscript {
 
 plugins {
     id 'net.researchgate.release' version '2.3.5'
+    id "com.github.dkorotych.gradle-maven-exec" version "0.2"
 }
 
 apply plugin: 'uk.co.cacoethes.lazybones-templates'
@@ -37,4 +41,26 @@ lazybones {
 
 task wrapper(type: Wrapper) {
     gradleVersion = '3.1'
+}
+
+task testTemplateMavenQuickstart(dependsOn: 'installTemplateMavenQuickstart', type: MavenExec) {
+    def directoryName = Files.createTempDirectory('maven-quickstart').toAbsolutePath().toFile().absolutePath
+    def version = '1.2.1'
+    exec {
+        if (System.getProperty('os.name').toLowerCase().contains('windows')) {
+            commandLine 'cmd', '/c', 'lazybones.bat'
+        } else {
+            commandLine 'lazybones'
+        }
+        args 'create', 'maven-quickstart', "${version}", "${directoryName}"
+    }
+    workingDir = directoryName
+    options {
+        threads = '1C'
+    }
+    goals = [
+            'clean',
+            'package',
+            'site'
+    ]
 }
