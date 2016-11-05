@@ -45,7 +45,7 @@ new ByteArrayInputStream(
     <appender-ref ref="STDOUT" />
   </root>
 </configuration>
-""".getBytes(StandardCharsets.UTF_8)).withCloseable {configStream ->
+""".getBytes(StandardCharsets.UTF_8)).withStream {configStream ->
         context.reset();
         configurator = new JoranConfigurator();
         configurator.setContext(context);
