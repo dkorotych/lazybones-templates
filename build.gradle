@@ -10,7 +10,18 @@ buildscript {
     }
 }
 
+plugins {
+    id 'net.researchgate.release' version '2.3.5'
+}
+
 apply plugin: 'uk.co.cacoethes.lazybones-templates'
+
+afterReleaseBuild.dependsOn publishAllTemplates
+
+release {
+    tagTemplate = 'v${version}'
+    buildTasks = ['check', 'packageAllTemplates']
+}
 
 lazybones {
     repositoryName = "dkorotych/lazybones-templates"
