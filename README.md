@@ -3,19 +3,15 @@
 [![Build Status](https://travis-ci.org/dkorotych/lazybones-templates.svg?branch=master)](https://travis-ci.org/dkorotych/lazybones-templates)
 [![Download](https://api.bintray.com/packages/dkorotych/lazybones-templates/maven-quickstart-template/images/download.svg)](https://bintray.com/dkorotych/lazybones-templates/maven-quickstart-template/_latestVersion)
 
-This project holds a set of templates to be used with [Lazybones][].
+This project holds a set of templates to be used with [Lazybones].
 The current list contains the following templates
 
- * [maven-quickstart][]: Quick start a base [Maven][] application
+ * [maven-quickstart]: Quick start a base [Maven](http://maven.apache.org) application
   * Additional support for [logback](http://logback.qos.ch)
- 
-[Lazybones]: http://github.com/pledbrook/lazybones
-[maven-quickstart]: https://github.com/dkorotych/lazybones-templates/templates/maven-quickstart
-[Maven]: http://maven.apache.org
 
 ##How To
 
-You have just created a simple project for managing your own Lazybones project
+You have just created a simple project for managing your own [Lazybones] project
 templates. You get a build file (`build.gradle`) and a directory for putting
 your templates in (`templates`).
 
@@ -25,10 +21,10 @@ package and install the templates locally with the command:
 
     ./gradlew installAllTemplates
 
-You'll then be able to use Lazybones to create new projects from these templates.
-If you then want to distribute them, you will need to set up a Bintray account,
+You'll then be able to use [Lazybones] to create new projects from these templates.
+If you then want to distribute them, you will need to set up a [Bintray] account,
 populate the `repositoryUrl`, `repositoryUsername` and `repositoryApiKey` settings
-in `build.gradle`, add new Bintray packages in the repository via the Bintray
+in `build.gradle`, add new [Bintray] packages in the repository via the [Bintray]
 UI, and finally publish the templates with
 
     ./gradlew publishAllTemplates
@@ -36,3 +32,6 @@ UI, and finally publish the templates with
 You can find out more about creating templates on [the GitHub wiki][1].
 
 [1]: https://github.com/pledbrook/lazybones/wiki/Template-developers-guide
+[Lazybones]: http://github.com/pledbrook/lazybones
+[maven-quickstart]: https://bintray.com/dkorotych/lazybones-templates/maven-quickstart-template/_latestVersion
+[Bintray]: https://bintray.com/
