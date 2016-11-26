@@ -1,5 +1,3 @@
-import java.nio.file.Files
-
 buildscript {
     repositories {
         mavenLocal()
@@ -19,6 +17,8 @@ plugins {
 }
 
 apply plugin: 'uk.co.cacoethes.lazybones-templates'
+apply from: "$rootDir/gradle/lazybones/lazybones.gradle"
+apply from: "$rootDir/gradle/functional-test.gradle"
 
 afterReleaseBuild.dependsOn publishAllTemplates
 
@@ -43,24 +43,60 @@ task wrapper(type: Wrapper) {
     gradleVersion = '3.1'
 }
 
-task testTemplateMavenQuickstart(dependsOn: 'installTemplateMavenQuickstart', type: MavenExec) {
-    def directoryName = Files.createTempDirectory('maven-quickstart').toAbsolutePath().toFile().absolutePath
-    def version = '1.2.1'
-    exec {
-        if (System.getProperty('os.name').toLowerCase().contains('windows')) {
-            commandLine 'cmd', '/c', 'lazybones.bat'
-        } else {
-            commandLine 'lazybones'
+functionalTest.dependsOn buildImages
+
+ext {
+    lastMavenQuickstartTemplateVersion = file('templates/maven-quickstart/VERSION').text.trim()
+    javaVersion = System.getProperty('java.version').replaceFirst(/^1\.(\d+).+$/, '$1')
+}
+
+def testTemplateMavenQuickstartByLazybonesPrefix = 'testTemplateMavenQuickstartByLazybones'
+tasks.addRule("Pattern: ${testTemplateMavenQuickstartByLazybonesPrefix}<version> " +
+        "(where version is ${supportedLazybonesVersions}) - Create application by 'MavenQuickstart' template" +
+        " and validate it") {
+    String taskName ->
+        if (taskName.startsWith(testTemplateMavenQuickstartByLazybonesPrefix)) {
+            def lazybonesVersion = taskName - testTemplateMavenQuickstartByLazybonesPrefix
+
+            task("createMavenApplicationByLazybones${lazybonesVersion}",
+                    dependsOn: ['installTemplateMavenQuickstart', "buildImage${javaVersion}-${lazybonesVersion}"]) {
+                group = 'verification'
+                description = "Create application by 'MavenQuickstart' template by Lazybones ${lazybonesVersion}"
+                doLast {
+                    def task = tasks[taskName]
+                    task.workingDir = createMavenApplication(javaVersion, lazybonesVersion, lastMavenQuickstartTemplateVersion)
+                    task.options {
+                        threads = '1C'
+                        batchMode = true
+                    }
+                    task.goals = [
+                            'package',
+                            'site'
+                    ]
+                }
+            }
+
+            task(taskName, type: MavenExec, dependsOn: "createMavenApplicationByLazybones${lazybonesVersion}") {
+                group = 'verification'
+                description = "Validate application, created by 'MavenQuickstart' template by Lazybones" +
+                        " ${lazybonesVersion}"
+            }
         }
-        args 'create', 'maven-quickstart', "${version}", "${directoryName}"
+}
+
+task testTemplateMavenQuickstart {
+    group = 'verification'
+    description = 'Create application by "MavenQuickstart" template by all supported Lazybones versions and validate it'
+}
+supportedLazybonesVersions.each { version ->
+    testTemplateMavenQuickstart.dependsOn << "${testTemplateMavenQuickstartByLazybonesPrefix}${version}"
+}
+
+File createMavenApplication(String javaVersion, String lazybonesVersion, String templateVersion,
+                            Map<String, String> properties = [:]) {
+    List<String> commands = ['create', 'maven-quickstart', "${templateVersion}".toString(), '.']
+    properties?.each {
+        commands << "-P${it.key}=${it.value}".toString()
     }
-    workingDir = directoryName
-    options {
-        threads = '1C'
-    }
-    goals = [
-            'clean',
-            'package',
-            'site'
-    ]
+    return executeLazybones(javaVersion, lazybonesVersion, commands)
 }
