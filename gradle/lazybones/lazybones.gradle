@@ -13,7 +13,7 @@ ext {
         def path = '/.lazybones/templates'
         def commands = ['docker', 'run', '--rm',
                         '--volume', "${directory}:${home}/app",
-                        '--volume', "${System.getProperty("user.home") + path}:${home + path}",
+                        '--volume', "${System.getProperty("user.home", System.getenv('HOME')) + path}:${home + path}",
                         createTag(javaVersion, lazybonesVersion)]
         lazybonesCommands?.each {
             commands << it
