@@ -13,7 +13,7 @@ buildscript {
 
 plugins {
     id 'net.researchgate.release' version '2.3.5'
-    id "com.github.dkorotych.gradle-maven-exec" version "0.2"
+    id "com.github.dkorotych.gradle-maven-exec" version "0.3"
 }
 
 apply plugin: 'uk.co.cacoethes.lazybones-templates'
