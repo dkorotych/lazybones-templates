@@ -4,7 +4,6 @@ import groovy.util.slurpersupport.GPathResult
 import spock.lang.Timeout
 import spock.lang.Unroll
 
-import java.time.LocalDate
 import java.util.concurrent.TimeUnit
 
 /**
@@ -91,7 +90,7 @@ class MavenQuickstartTests extends AbstractLazybonesTests {
         pom.packaging == 'jar'
         pom.name == 'App'
         pom.description == 'App'
-        pom.inceptionYear == LocalDate.now().year as String
+        pom.inceptionYear == GregorianCalendar.getInstance().get(Calendar.YEAR) as String
         pom.url == 'https://github.com/lazybones/app'
         pom.scm.url == 'https://github.com/lazybones/app.git'
         pom.scm.developerConnection == 'scm:git:git@github.com:lazybones/app.git'
