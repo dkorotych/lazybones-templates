@@ -11,4 +11,4 @@ services:
 jdk:
   - oraclejdk7
   - oraclejdk8
-script: "./gradlew -Djava.net.preferIPv4Stack=true --no-daemon check testTemplateMavenQuickstart"
+script: "./gradlew -Djava.net.preferIPv4Stack=true --no-daemon check testTemplateMavenQuickstart --info"
