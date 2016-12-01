@@ -96,6 +96,10 @@ File createMavenApplication(String javaVersion, String lazybonesVersion, String 
                             Map<String, String> properties = [:]) {
     List<String> commands = ['create', "https://dl.bintray.com/${lazybones.repositoryName}/maven-quickstart-template-"
                              + "${templateVersion}.zip".toString(), '.']
+    def key = 'source'
+    if (!properties.containsKey(key)) {
+        properties.put(key, "1.${javaVersion}")
+    }
     properties?.each {
         commands << "-P${it.key}=${it.value}".toString()
     }
