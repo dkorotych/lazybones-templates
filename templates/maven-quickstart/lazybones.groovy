@@ -130,6 +130,16 @@ if (properties.checkstyleConfig != 'custom') {
 javaSourcesPath = 'src/main/java'
 testSourcesPath = 'src/test/java'
 
+// Remove some files if source version less then Java 8
+source = (properties.source as String).replace("1.", "") as Integer
+if (source < 8) {
+    ["CharSequenceUtils", "CollectionUtils"].each { name ->
+        new File(projectDir, "${javaSourcesPath}/utils/${name}.java").delete()
+        new File(projectDir, "${testSourcesPath}/utils/${name}Test.java").delete()
+    }
+    properties.useCheckstyleBackport = true
+}
+
 // Replace template files
 ['pom.xml', "${javaSourcesPath}/**/*.java", "${testSourcesPath}/**/*.java"].each {
     processTemplates it, properties
@@ -171,15 +181,6 @@ tests = new File(projectDir, testSourcesPath)
             return FileVisitResult.CONTINUE
         }
     })
-}
-
-// Remove some files if source version less then Java 8
-source = (properties.source as String).replace("1.", "") as Integer
-if (source < 8) {
-    ["CharSequenceUtils", "CollectionUtils"].each { name ->
-        new File(projectDir, "${javaSourcesPath}/${packagePath}/utils/${name}.java").delete()
-        new File(projectDir, "${testSourcesPath}/${packagePath}/utils/${name}Test.java").delete()
-    }
 }
 
 // For projects with git support generate .gitignore
