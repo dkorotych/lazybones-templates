@@ -201,7 +201,8 @@ class MavenQuickstartTests extends AbstractLazybonesTests {
 
     private ProcessBuilder getMavenQuickstartBuilder(String lazybonesVersion, String templateVersion,
                                                      Map<String, String> properties, String javaSource = javaVersion) {
-        List<String> commands = ['create', 'maven-quickstart', "${templateVersion}".toString(), '.']
+        List<String> commands = ['create', "https://dl.bintray.com/dkorotych/lazybones-templates"
+                + "/maven-quickstart-template-${templateVersion}.zip".toString(), '.']
         if (!properties?.isEmpty()) {
             properties.each {
                 commands << "-P${it.key}=${it.value}".toString()
