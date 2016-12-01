@@ -53,12 +53,20 @@
             <url>http://rnveach.github.io/checkstyle-backport-jre6/maven2</url>
         </pluginRepository>
     </pluginRepositories>
+
+    <repositories>
+        <repository>
+            <id>checkstyle-backport-jre6-maven</id>
+            <name>checkstyle-backport-jre6-maven</name>
+            <url>http://rnveach.github.io/checkstyle-backport-jre6/maven2</url>
+        </repository>
+    </repositories>
 {{/if}}
     <dependencyManagement>
         <dependencies>
             <dependency>
                 <groupId>com.puppycrawl.tools</groupId>
-                <artifactId>checkstyle{{#if useCheckstyleBackport}}-backport-jre6{{/if}}</artifactId>
+                <artifactId>{{checkstyleArtifactId}}</artifactId>
                 <version>${checkstyle.version}</version>
             </dependency>
 
@@ -180,7 +188,7 @@
                     <dependencies>
                         <dependency>
                             <groupId>com.puppycrawl.tools</groupId>
-                            <artifactId>checkstyle</artifactId>
+                            <artifactId>{{checkstyleArtifactId}}</artifactId>
                             <version>${checkstyle.version}</version>
                         </dependency>
                     </dependencies>
@@ -230,7 +238,7 @@
                     <dependencies>
                         <dependency>
                             <groupId>com.puppycrawl.tools</groupId>
-                            <artifactId>checkstyle</artifactId>
+                            <artifactId>{{checkstyleArtifactId}}</artifactId>
                             <version>${checkstyle.version}</version>
                         </dependency>
                     </dependencies>
