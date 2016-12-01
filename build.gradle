@@ -13,7 +13,7 @@ buildscript {
 
 plugins {
     id 'net.researchgate.release' version '2.3.5'
-    id "com.github.dkorotych.gradle-maven-exec" version "0.3"
+    id "com.github.dkorotych.gradle-maven-exec" version "0.2"
 }
 
 apply plugin: 'uk.co.cacoethes.lazybones-templates'
@@ -94,7 +94,8 @@ supportedLazybonesVersions.each { version ->
 
 File createMavenApplication(String javaVersion, String lazybonesVersion, String templateVersion,
                             Map<String, String> properties = [:]) {
-    List<String> commands = ['create', 'maven-quickstart', "${templateVersion}".toString(), '.']
+    List<String> commands = ['create', "https://dl.bintray.com/${lazybones.repositoryName}/maven-quickstart-template-"
+                             + "${templateVersion}.zip".toString(), '.']
     properties?.each {
         commands << "-P${it.key}=${it.value}".toString()
     }

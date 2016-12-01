@@ -2,7 +2,7 @@ import java.nio.file.Files
 
 ext {
     supportedLazybonesVersions = ['0.8.1', '0.8.2', '0.8.3']
-    if (Boolean.TRUE.equals(System.getenv('TRAVIS'))) {
+    if (Boolean.TRUE == Boolean.valueOf(System.getenv('TRAVIS'))) {
         supportedJavaVersions = [System.getProperty('java.version').replaceFirst(/^1\.(\d+).+$/, '$1') as Integer]
     } else {
         supportedJavaVersions = 7..8
@@ -13,7 +13,7 @@ ext {
         def path = '/.lazybones/templates'
         def commands = ['docker', 'run', '--rm',
                         '--volume', "${directory}:${home}/app",
-                        '--volume', "${System.getProperty("user.home", System.getenv('HOME')) + path}:${home + path}",
+                        '--volume', "${System.getProperty("user.home") + path}:${home + path}",
                         createTag(javaVersion, lazybonesVersion)]
         lazybonesCommands?.each {
             commands << it
