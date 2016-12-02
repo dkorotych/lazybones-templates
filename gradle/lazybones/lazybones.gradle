@@ -1,0 +1,95 @@
+import java.nio.file.Files
+
+ext {
+    supportedLazybonesVersions = ['0.8.1', '0.8.2', '0.8.3']
+    if (Boolean.TRUE == Boolean.valueOf(System.getenv('TRAVIS'))) {
+        supportedJavaVersions = [System.getProperty('java.version').replaceFirst(/^1\.(\d+).+$/, '$1') as Integer]
+    } else {
+        supportedJavaVersions = 7..8
+    }
+    executeLazybones = { String javaVersion, String lazybonesVersion, List<String> lazybonesCommands ->
+        def directory = Files.createTempDirectory(buildDir.toPath(), "lazybones").toFile()
+        def home = '/home/lazybones'
+        def path = '/.lazybones/templates'
+        def commands = ['docker', 'run', '--rm',
+                        '--volume', "${directory}:${home}/app",
+                        '--volume', "${System.getProperty("user.home") + path}:${home + path}",
+                        createTag(javaVersion, lazybonesVersion)]
+        lazybonesCommands?.each {
+            commands << it
+        }
+        exec {
+            workingDir directory
+            commandLine commands
+        }
+        directory
+    }
+}
+
+def buildImagePrefix = 'buildImage'
+tasks.addRule("Pattern: ${buildImagePrefix}<source>-<version> " +
+        "(where source is one of ${supportedJavaVersions} and version is one of ${supportedLazybonesVersions})" +
+        " - Build Docker image with Lazybones <version> on Java <source>") {
+    String taskName ->
+        if (taskName.startsWith(buildImagePrefix)) {
+            String[] parts = (taskName - buildImagePrefix).split('-')
+            String source = parts[0]
+            String version = parts[1]
+            String tag = createTag(source, version)
+            task(taskName) {
+                group = 'verification'
+                description = "Build Docker image with Lazybones ${version} on Java ${source}"
+                String baseImage = "java:${source}-jre-alpine"
+                doLast {
+                    exec {
+                        commandLine 'docker', 'pull', baseImage
+                    }
+                    exec {
+                        commandLine 'docker', 'tag', baseImage, 'java:virtual-jre-alpine'
+                    }
+                    exec {
+                        workingDir "${rootDir}/gradle/lazybones/docker"
+                        commandLine 'docker', 'build', '.', '--tag', tag,
+                                '--build-arg', "LAZYBONES_VERSION=${version}"
+                    }
+                }
+                onlyIf {
+                    def output = new ByteArrayOutputStream()
+                    exec {
+                        commandLine 'docker', 'images', tag, '--quiet'
+                        standardOutput = output
+                    }
+                    return output.toString().trim().isEmpty()
+                }
+            }
+        }
+}
+
+task buildImages {
+    group = 'verification'
+    description = 'Build all Docker images'
+}
+supportedJavaVersions.each { source ->
+    supportedLazybonesVersions.each { version ->
+        buildImages.dependsOn << "buildImage${source}-${version}"
+    }
+}
+
+task removeImages(type: Exec) {
+    List<String> items = ['docker', 'rmi', '--force']
+    supportedJavaVersions.each { source ->
+        supportedLazybonesVersions.each { version ->
+            items << createTag(source, version)
+        }
+        items << "java:${source}-jre-alpine"
+    }
+    items << "java:virtual-jre-alpine"
+    commandLine = items
+    ignoreExitValue = true
+}
+
+clean.dependsOn removeImages
+
+def createTag(source, version) {
+    "lazybones:${version}-jre${source}"
+}
