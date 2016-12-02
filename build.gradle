@@ -24,7 +24,8 @@ afterReleaseBuild.dependsOn publishAllTemplates
 
 release {
     tagTemplate = 'v${version}'
-    buildTasks = ['check', 'packageAllTemplates']
+    newVersionCommitMessage = '[Gradle Release Plugin][skip ci] - new version commit: '
+    buildTasks = ['check', 'packageAllTemplates', 'testTemplateMavenQuickstart']
 }
 
 lazybones {
