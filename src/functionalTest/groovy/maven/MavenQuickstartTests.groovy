@@ -12,7 +12,7 @@ import java.util.concurrent.TimeUnit
 class MavenQuickstartTests extends AbstractLazybonesTests {
     private static final List<String> SUPPORTED_LAZYBONES_VERSIONS = ['0.8.1', '0.8.2', '0.8.3']
     private static final int CORRECT_LAZYBONES_VERSION_INDEX = SUPPORTED_LAZYBONES_VERSIONS.indexOf('0.8.3')
-    private static final List<String> TEMPLATE_VERSIONS = ['1.0', '1.1', '1.2', '1.2.1']
+    private static final List<String> TEMPLATE_VERSIONS = ['1.0', '1.1', '1.2', '1.2.1', '1.3']
     private static final int CORRECT_TEMPLATE_VERSION_INDEX = TEMPLATE_VERSIONS.indexOf('1.2.1')
 
     private static final ERROR_MESSAGE = 'Post install script caused an exception, project might be corrupt: ' +
@@ -201,8 +201,15 @@ class MavenQuickstartTests extends AbstractLazybonesTests {
 
     private ProcessBuilder getMavenQuickstartBuilder(String lazybonesVersion, String templateVersion,
                                                      Map<String, String> properties, String javaSource = javaVersion) {
-        List<String> commands = ['create', "https://dl.bintray.com/dkorotych/lazybones-templates"
-                + "/maven-quickstart-template-${templateVersion}.zip".toString(), '.']
+        List<String> commands = []
+        def localTemplate = new File("${System.getProperty("user.home")}/.lazybones/templates/maven-quickstart-"
+                + "${templateVersion}.zip")
+        if (localTemplate.exists()) {
+            commands = ['create', 'maven-quickstart', "${templateVersion}".toString(), '.']
+        } else {
+            commands = ['create', "https://dl.bintray.com/${lazybones.repositoryName}/maven-quickstart-template-"
+                    + "${templateVersion}.zip".toString(), '.']
+        }
         if (!properties?.isEmpty()) {
             properties.each {
                 commands << "-P${it.key}=${it.value}".toString()

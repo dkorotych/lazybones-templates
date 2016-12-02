@@ -94,8 +94,15 @@ supportedLazybonesVersions.each { version ->
 
 File createMavenApplication(String javaVersion, String lazybonesVersion, String templateVersion,
                             Map<String, String> properties = [:]) {
-    List<String> commands = ['create', "https://dl.bintray.com/${lazybones.repositoryName}/maven-quickstart-template-"
-                             + "${templateVersion}.zip".toString(), '.']
+    List<String> commands = []
+    def localTemplate = file("${System.getProperty("user.home")}/.lazybones/templates/maven-quickstart-"
+            + "${templateVersion}.zip")
+    if (localTemplate.exists()) {
+        commands = ['create', 'maven-quickstart', "${templateVersion}".toString(), '.']
+    } else {
+        commands = ['create', "https://dl.bintray.com/${lazybones.repositoryName}/maven-quickstart-template-"
+                + "${templateVersion}.zip".toString(), '.']
+    }
     def key = 'source'
     if (!properties.containsKey(key)) {
         properties.put(key, "1.${javaVersion}")
