@@ -2,6 +2,7 @@
 
 [![Build Status](https://travis-ci.org/dkorotych/lazybones-templates.svg?branch=master)](https://travis-ci.org/dkorotych/lazybones-templates)
 [![Download](https://api.bintray.com/packages/dkorotych/lazybones-templates/maven-quickstart-template/images/download.svg)](https://bintray.com/dkorotych/lazybones-templates/maven-quickstart-template/_latestVersion)
+[![license](https://img.shields.io/github/license/dkorotych/lazybones-templates.svg)](https://github.com/dkorotych/lazybones-templates.git)
 
 This project holds a set of templates to be used with [Lazybones].
 The current list contains the following templates
