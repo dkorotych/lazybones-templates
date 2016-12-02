@@ -207,7 +207,7 @@ class MavenQuickstartTests extends AbstractLazybonesTests {
         if (localTemplate.exists()) {
             commands = ['create', 'maven-quickstart', "${templateVersion}".toString(), '.']
         } else {
-            commands = ['create', "https://dl.bintray.com/${lazybones.repositoryName}/maven-quickstart-template-"
+            commands = ['create', "https://dl.bintray.com/dkorotych/lazybones-templates/maven-quickstart-template-"
                     + "${templateVersion}.zip".toString(), '.']
         }
         if (!properties?.isEmpty()) {
