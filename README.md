@@ -1,4 +1,4 @@
-##Lazybones Templates
+## Lazybones Templates
 
 [![Build Status](https://travis-ci.org/dkorotych/lazybones-templates.svg?branch=master)](https://travis-ci.org/dkorotych/lazybones-templates)
 [![Download](https://api.bintray.com/packages/dkorotych/lazybones-templates/maven-quickstart-template/images/download.svg)](https://bintray.com/dkorotych/lazybones-templates/maven-quickstart-template/_latestVersion)
@@ -7,10 +7,10 @@
 This project holds a set of templates to be used with [Lazybones].
 The current list contains the following templates
 
- * [maven-quickstart]: Quick start a base [Maven](http://maven.apache.org) application
-  * Additional support for [logback](http://logback.qos.ch)
+* [maven-quickstart]: Quick start a base [Maven](http://maven.apache.org) application
+* Additional support for [logback](http://logback.qos.ch)
 
-##How To
+## How To
 
 You have just created a simple project for managing your own [Lazybones] project
 templates. You get a build file (`build.gradle`) and a directory for putting
