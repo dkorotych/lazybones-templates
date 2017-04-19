@@ -2,7 +2,7 @@ FROM java:virtual-jre-alpine
 
 MAINTAINER dkorotych@gmail.com
 
-RUN apk add --no-cache curl bash unzip
+RUN apk add --no-cache curl bash zip unzip
 SHELL ["/bin/bash", "-c", "-l"]
 
 ARG LAZYBONES_VERSION
