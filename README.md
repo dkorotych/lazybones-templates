@@ -8,7 +8,7 @@ This project holds a set of templates to be used with [Lazybones].
 The current list contains the following templates
 
 * [maven-quickstart]: Quick start a base [Maven](http://maven.apache.org) application
-* Additional support for [logback](http://logback.qos.ch)
+  * Additional support for [logback](http://logback.qos.ch)
 
 ## How To
 
