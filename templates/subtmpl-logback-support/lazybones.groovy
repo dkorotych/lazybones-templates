@@ -31,7 +31,7 @@ dependencies = [
         new Dependency(artifactId: 'jul-to-slf4j'),
         new Dependency(artifactId: 'jcl-over-slf4j'),
         new Dependency(artifactId: 'log4j-over-slf4j'),
-        new Dependency(groupId: 'ch.qos.logback', artifactId: 'logback-classic', version: '1.1.7', exclusions: [slf4jApi])
+        new Dependency(groupId: 'ch.qos.logback', artifactId: 'logback-classic', version: '1.2.3', exclusions: [slf4jApi])
 ]
 
 // Any logback dependency already exists in pom.xml?
@@ -61,7 +61,7 @@ if (processing) {
     writer = new StringWriter(1950)
     new MarkupBuilder(new IndentPrinter(writer, indent)).project {
         delegate.'properties' {
-            'slf4j.version'("1.7.21")
+            'slf4j.version'("1.7.25")
         }
         dependencyManagement {
             dependencies {
