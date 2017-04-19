@@ -12,7 +12,7 @@ import java.util.concurrent.TimeUnit
 class MavenQuickstartTests extends AbstractLazybonesTests {
     private static final List<String> SUPPORTED_LAZYBONES_VERSIONS = ['0.8.1', '0.8.2', '0.8.3']
     private static final int CORRECT_LAZYBONES_VERSION_INDEX = SUPPORTED_LAZYBONES_VERSIONS.indexOf('0.8.3')
-    private static final List<String> TEMPLATE_VERSIONS = ['1.0', '1.1', '1.2', '1.2.1', '1.3']
+    private static final List<String> TEMPLATE_VERSIONS = ['1.0', '1.1', '1.2', '1.2.1', '1.3', '1.3.1']
     private static final int CORRECT_TEMPLATE_VERSION_INDEX = TEMPLATE_VERSIONS.indexOf('1.2.1')
 
     private static final ERROR_MESSAGE = 'Post install script caused an exception, project might be corrupt: ' +
