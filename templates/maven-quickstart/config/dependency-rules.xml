@@ -9,5 +9,10 @@
                 <ignoreVersion type="regex">.*-CR\d+</ignoreVersion>
             </ignoreVersions>
         </rule>
+        <rule groupId="org.slf4j">
+            <ignoreVersions>
+                <ignoreVersion type="regex">.*[\Q-alpha\E|\Q-beta\E]\d+</ignoreVersion>
+            </ignoreVersions>
+        </rule>
     </rules>
 </ruleset>
