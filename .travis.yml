@@ -1,4 +1,5 @@
 language: groovy
+before_install: "./gradlew buildImages"
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
   - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
@@ -7,9 +8,11 @@ cache:
     - $HOME/.gradle/caches/
     - $HOME/.gradle/wrapper/
     - $HOME/.m2/repository/
+    - $HOME/.lazybones/templates/
+    - $HOME/.groovy/grapes/
 services:
   docker
 jdk:
   - oraclejdk7
   - oraclejdk8
-script: "./gradlew -Djava.net.preferIPv4Stack=true --no-daemon check testTemplateMavenQuickstart --info"
+script: "./gradlew check testTemplateMavenQuickstart"
