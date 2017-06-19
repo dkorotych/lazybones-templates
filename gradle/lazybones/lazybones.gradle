@@ -81,7 +81,7 @@ task removeImages(type: Exec) {
         supportedLazybonesVersions.each { version ->
             items << createTag(source, version)
         }
-        items << "java:${source}-jre-alpine"
+        items << "openjdk:${source}-jre-alpine"
     }
     items << "java:virtual-jre-alpine"
     commandLine = items
