@@ -26,9 +26,8 @@ new File(projectDir, "utils").listFiles().each { file ->
         file.delete()
     }
 }
-def utils = new GroovyShell(getClass().getClassLoader(), new Binding([
-    'projectDir'  : projectDir,
-    'fileEncoding': fileEncoding]
+utils = new GroovyShell(getClass().getClassLoader(), new Binding([
+    'lazybonesScript': this]
 )).parse(new File("${lazybonesDir.absolutePath}/utils.groovy"))
 
 def askPredefined(String message, String defaultValue, List<String> answers, String property) {
@@ -86,7 +85,7 @@ properties.source = ask("Define value for 'source version' [1.8]: ", "1.8", "sou
 properties.inceptionYear = new SimpleDateFormat("YYYY").format(new Date())
 
 defaultValue = "${properties.groupId.toLowerCase().contains('github') ? 'yes' : 'no'}"
-properties.github = askBoolean("Project will be placed on GitHub? ${defaultValue}: ", "${defaultValue}", "github")
+properties.github = utils.askBoolean('Project will be placed on GitHub?', defaultValue, 'github')
 if (properties.github) {
     def repo = "https://github.com/${username}/${properties.artifactId}"
     properties.url = repo
