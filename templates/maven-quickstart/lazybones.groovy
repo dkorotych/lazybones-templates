@@ -19,16 +19,21 @@ import java.nio.file.Path
 import java.nio.file.attribute.BasicFileAttributes
 import java.text.SimpleDateFormat
 
+// Move utility scripts to a hidden directory, to use them in subtemplates
+lazybonesDir = new File(projectDir, '.lazybones')
+new File(projectDir, "utils").listFiles().each { file ->
+    if (file.renameTo(new File(lazybonesDir, file.name))) {
+        file.delete()
+    }
+}
+def utils = new GroovyShell(getClass().getClassLoader(), new Binding([
+    'projectDir'  : projectDir,
+    'fileEncoding': fileEncoding]
+)).parse(new File("${lazybonesDir.absolutePath}/utils.groovy"))
+
 def askPredefined(String message, String defaultValue, List<String> answers, String property) {
-    message = "${message}. Choices are \'${answers.join('\', \'')}\' [${defaultValue}]: "
-    answers = answers.each {
-        it.toLowerCase()
-    }
-    answer = ''
-    while (!answers.contains(answer)) {
-        answer = ask(message, defaultValue, property).toLowerCase()
-    }
-    return answer
+    return utils.askPredefined("${message}. Choices are \'${answers.join('\', \'')}\' [${defaultValue}]: ",
+        defaultValue, answers, property)
 }
 
 // Disable debug messages from HandlebarsTemplateEngine
@@ -80,10 +85,9 @@ properties.source = ask("Define value for 'source version' [1.8]: ", "1.8", "sou
 
 properties.inceptionYear = new SimpleDateFormat("YYYY").format(new Date())
 
-defaultValue = "${properties.groupId.toLowerCase().contains('github') ? '[Y/n]' : 'N/y'}"
-properties.github = ask("Project will be placed on GitHub? ${defaultValue}: ", "${defaultValue}", "github")
-if (properties.github == '[Y/n]' || properties.github == 'Y' || properties.github == 'y') {
-    properties.github = true
+defaultValue = "${properties.groupId.toLowerCase().contains('github') ? 'yes' : 'no'}"
+properties.github = askBoolean("Project will be placed on GitHub? ${defaultValue}: ", "${defaultValue}", "github")
+if (properties.github) {
     def repo = "https://github.com/${username}/${properties.artifactId}"
     properties.url = repo
     properties.issueManagement = [
@@ -94,8 +98,6 @@ if (properties.github == '[Y/n]' || properties.github == 'Y' || properties.githu
         "url"                : "${repo}.git",
         "developerConnection": "scm:git:git@github.com:${username}/${properties.artifactId}.git"
     ]
-} else {
-    properties.github = false
 }
 
 properties.checkstyleConfig = askPredefined("Define value for checkstyle configuration", 'custom', ['custom', 'sun', 'google'], "checkstyleConfig")
@@ -118,13 +120,13 @@ switch (properties.checkstyleConfig) {
         break
 }
 if (properties.checkstyleConfig != 'custom') {
-    new File(projectDir, 'config/checkstyle').deleteDir()
+    utils.fileInProject('config/checkstyle').deleteDir()
 }
 
 // Create sources directories
 ["main", "test"].each { parent ->
     ["java", "resources"].each { dir ->
-        new File(projectDir, "src/${parent}/${dir}").mkdirs()
+        utils.fileInProject("src/${parent}/${dir}").mkdirs()
     }
 }
 javaSourcesPath = 'src/main/java'
@@ -134,14 +136,14 @@ testSourcesPath = 'src/test/java'
 source = (properties.source as String).replace("1.", "") as Integer
 if (source < 8) {
     ["CharSequenceUtils", "CollectionUtils"].each { name ->
-        new File(projectDir, "${javaSourcesPath}/utils/${name}.java").delete()
-        new File(projectDir, "${testSourcesPath}/utils/${name}Test.java").delete()
+        utils.fileInProject("${javaSourcesPath}/utils/${name}.java").delete()
+        utils.fileInProject("${testSourcesPath}/utils/${name}Test.java").delete()
     }
-    def utils = new File(projectDir, "${javaSourcesPath}/utils")
-    def list = utils.list()
+    def utilPackage = utils.fileInProject("${javaSourcesPath}/utils")
+    def list = utilPackage.list()
     def packageInfoFileName = 'package-info.java'
     if (list != null && (list.length == 0 || (list.length == 1 && list[0] == packageInfoFileName))) {
-        utils.deleteDir()
+        utilPackage.deleteDir()
     }
     properties.useCheckstyleBackport = true
 }
@@ -159,8 +161,8 @@ if (properties.useCheckstyleBackport) {
 packagePath = properties.packageName.replace('.' as char, '/' as char)
 
 // Move exists sources and tests to correct package
-sources = new File(projectDir, javaSourcesPath)
-tests = new File(projectDir, testSourcesPath)
+sources = utils.fileInProject(javaSourcesPath)
+tests = utils.fileInProject(testSourcesPath)
 [sources, tests].each {
     def path = it.toPath()
     Files.walkFileTree(path, new FileVisitor<Path>() {

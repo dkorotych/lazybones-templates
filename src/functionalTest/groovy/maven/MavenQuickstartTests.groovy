@@ -9,7 +9,7 @@ import groovy.util.slurpersupport.GPathResult
 abstract class MavenQuickstartTests extends AbstractLazybonesTests {
     protected static final List<String> SUPPORTED_LAZYBONES_VERSIONS = ['0.8.1', '0.8.2', '0.8.3']
     protected static final int CORRECT_LAZYBONES_VERSION_INDEX = SUPPORTED_LAZYBONES_VERSIONS.indexOf('0.8.3')
-    protected static final List<String> TEMPLATE_VERSIONS = ['1.0', '1.1', '1.2', '1.2.1', '1.3', '1.3.1']
+    protected static final List<String> TEMPLATE_VERSIONS = ['1.0', '1.1', '1.2', '1.2.1', '1.3', '1.3.1', '1.4']
     protected static final int CORRECT_TEMPLATE_VERSION_INDEX = TEMPLATE_VERSIONS.indexOf('1.2.1')
 
     protected static final ERROR_MESSAGE = 'Post install script caused an exception, project might be corrupt: ' +
@@ -28,6 +28,11 @@ abstract class MavenQuickstartTests extends AbstractLazybonesTests {
     protected ProcessBuilder getMavenQuickstartBuilder(String lazybonesVersion, String templateVersion,
                                                        Map<String, String> properties,
                                                        String javaSource = javaVersion) {
+        List<String> commands = createCommands(templateVersion, properties)
+        getLazybonesBuilder(false, javaSource, lazybonesVersion, commands)
+    }
+
+    protected List<String> createCommands(String templateVersion, Map<String, String> properties) {
         List<String> commands = []
         if (localTemplateExists(templateVersion)) {
             commands = ['create', 'maven-quickstart', getLocalTemplateString(templateVersion), '.']
@@ -39,7 +44,7 @@ abstract class MavenQuickstartTests extends AbstractLazybonesTests {
                 commands << "-P${it.key}=${it.value}".toString()
             }
         }
-        getLazybonesBuilder(false, javaSource, lazybonesVersion, commands)
+        return commands
     }
 
     protected void createProject(String lazybonesVersion, String templateVersion, Map<String, String> options) {
