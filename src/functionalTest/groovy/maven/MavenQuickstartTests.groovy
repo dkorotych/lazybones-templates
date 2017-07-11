@@ -3,8 +3,6 @@ package maven
 import groovy.transform.Memoized
 import groovy.util.slurpersupport.GPathResult
 
-import java.util.concurrent.TimeUnit
-
 /**
  * @author Dmitry Korotych (dkorotych at gmail dot com)
  */
@@ -21,11 +19,6 @@ abstract class MavenQuickstartTests extends AbstractLazybonesTests {
 
     def setupSpec() {
         javaVersion = System.getProperty('java.version').replaceFirst(/^1\.(\d+).+$/, '$1')
-        List<String> commands = ['create', getRemoteTemplateString(TEMPLATE_VERSIONS.last()), '.']
-        File directory = File.createTempDir()
-        getLazybonesBuilder(false, javaVersion, SUPPORTED_LAZYBONES_VERSIONS.last(), commands, directory).
-                start().
-                waitFor()
     }
 
     protected ProcessBuilder getMavenQuickstartBuilder(String lazybonesVersion, String templateVersion) {

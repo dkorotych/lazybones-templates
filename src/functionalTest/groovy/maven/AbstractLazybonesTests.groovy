@@ -9,6 +9,8 @@ import spock.lang.Specification
  * @author Dmitry Korotych (dkorotych at gmail dot com)
  */
 abstract class AbstractLazybonesTests extends Specification {
+    private static final String lazybonesHome = '/home/lazybones'
+
     @Rule
     TemporaryFolder temporaryFolder = new TemporaryFolder()
     File projectDir
@@ -44,21 +46,25 @@ abstract class AbstractLazybonesTests extends Specification {
 
     @Memoized
     private String getProjectPathVolume(File directory) {
-        return "${directory.absolutePath}:/home/lazybones/app".toString()
+        return "${directory.absolutePath}:${lazybonesHome}/app".toString()
     }
 
     @Memoized
     private static String getTemplatesVolume() {
-        return "${System.getProperty("user.home")}/.lazybones/templates:/home/lazybones/.lazybones/templates".toString()
+        return createVolume('.lazybones/templates')
     }
 
     @Memoized
     private static String getGroovyCacheVolume() {
-        return "${System.getProperty("user.home")}/.groovy:/home/lazybones/.groovy".toString()
+        return createVolume('.groovy')
     }
 
     @MaxMemoized
     private static String getImageName(String lazybonesVersion, String javaSource) {
         return "lazybones:${lazybonesVersion}-jre${javaSource}".toString()
+    }
+
+    private static String createVolume(String path) {
+        return "${System.getProperty("user.home")}/$path:$lazybonesHome/$path".toString()
     }
 }
