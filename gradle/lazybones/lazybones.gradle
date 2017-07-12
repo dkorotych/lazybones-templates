@@ -12,11 +12,13 @@ ext {
         def home = '/home/lazybones'
         def templates = '/.lazybones/templates'
         def groovy = '/.groovy'
+        def maven = '/.m2/repository'
         def userHome = System.getProperty("user.home")
         def commands = ['docker', 'run', '--rm',
                         '--volume', "${directory}:${home}/app",
                         '--volume', "${userHome + templates}:${home + templates}",
                         '--volume', "${userHome + groovy}:${home + groovy}",
+                        '--volume', "${userHome + maven}:${home + maven}",
                         createTag(javaVersion, lazybonesVersion)]
         lazybonesCommands?.each {
             commands << it
