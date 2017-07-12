@@ -51,6 +51,11 @@ task functionalTest(type: Test, dependsOn: prepareFunctionalTestEnvironment) {
     beforeTest { descriptor ->
         logger.lifecycle "Running test: $descriptor.name"
     }
+
+    testLogging {
+        exceptionFormat "full"
+        showStandardStreams = true
+    }
 }
 
 check.dependsOn functionalTest
