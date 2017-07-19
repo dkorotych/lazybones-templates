@@ -19,20 +19,14 @@ import java.nio.file.Path
 import java.nio.file.attribute.BasicFileAttributes
 import java.text.SimpleDateFormat
 
-// Move utility scripts to a hidden directory, to use them in subtemplates
-lazybonesDir = new File(projectDir, '.lazybones')
-new File(projectDir, "utils").listFiles().each { file ->
-    if (file.renameTo(new File(lazybonesDir, file.name))) {
-        file.delete()
-    }
+def script = new GroovyScriptEngine(".lazybones").with {
+    loadScriptByName('utils.groovy')
 }
-utils = new GroovyShell(getClass().getClassLoader(), new Binding([
-    'lazybonesScript': this]
-)).parse(new File("${lazybonesDir.absolutePath}/utils.groovy"))
+this.metaClass.mixin script
 
-def askPredefined(String message, String defaultValue, List<String> answers, String property) {
-    return utils.askPredefined("${message}. Choices are \'${answers.join('\', \'')}\' [${defaultValue}]: ",
-        defaultValue, answers, property)
+def askChoices(String message, String defaultValue, List<String> answers, String property) {
+    return askPredefined("${message}. Choices are \'${answers.join('\', \'')}\' [${defaultValue}]: ",
+        defaultValue, answers, property, false)
 }
 
 // Disable debug messages from HandlebarsTemplateEngine
@@ -85,7 +79,7 @@ properties.source = ask("Define value for 'source version' [1.8]: ", "1.8", "sou
 properties.inceptionYear = new SimpleDateFormat("YYYY").format(new Date())
 
 defaultValue = "${properties.groupId.toLowerCase().contains('github') ? 'yes' : 'no'}"
-properties.github = utils.askBoolean('Project will be placed on GitHub?', defaultValue, 'github')
+properties.github = askBoolean('Project will be placed on GitHub?', defaultValue, 'github')
 if (properties.github) {
     def repo = "https://github.com/${username}/${properties.artifactId}"
     properties.url = repo
@@ -99,7 +93,7 @@ if (properties.github) {
     ]
 }
 
-properties.checkstyleConfig = askPredefined("Define value for checkstyle configuration", 'custom', ['custom', 'sun', 'google'], "checkstyleConfig")
+properties.checkstyleConfig = askChoices("Define value for checkstyle configuration", 'custom', ['custom', 'sun', 'google'], "checkstyleConfig")
 switch (properties.checkstyleConfig) {
     case 'custom':
         properties.checkstyle = [
@@ -119,13 +113,13 @@ switch (properties.checkstyleConfig) {
         break
 }
 if (properties.checkstyleConfig != 'custom') {
-    utils.fileInProject('config/checkstyle').deleteDir()
+    fileInProject('config/checkstyle').deleteDir()
 }
 
 // Create sources directories
 ["main", "test"].each { parent ->
     ["java", "resources"].each { dir ->
-        utils.fileInProject("src/${parent}/${dir}").mkdirs()
+        fileInProject("src/${parent}/${dir}").mkdirs()
     }
 }
 javaSourcesPath = 'src/main/java'
@@ -135,10 +129,10 @@ testSourcesPath = 'src/test/java'
 source = (properties.source as String).replace("1.", "") as Integer
 if (source < 8) {
     ["CharSequenceUtils", "CollectionUtils"].each { name ->
-        utils.fileInProject("${javaSourcesPath}/utils/${name}.java").delete()
-        utils.fileInProject("${testSourcesPath}/utils/${name}Test.java").delete()
+        fileInProject("${javaSourcesPath}/utils/${name}.java").delete()
+        fileInProject("${testSourcesPath}/utils/${name}Test.java").delete()
     }
-    def utilPackage = utils.fileInProject("${javaSourcesPath}/utils")
+    def utilPackage = fileInProject("${javaSourcesPath}/utils")
     def list = utilPackage.list()
     def packageInfoFileName = 'package-info.java'
     if (list != null && (list.length == 0 || (list.length == 1 && list[0] == packageInfoFileName))) {
@@ -160,8 +154,8 @@ if (properties.useCheckstyleBackport) {
 packagePath = properties.packageName.replace('.' as char, '/' as char)
 
 // Move exists sources and tests to correct package
-sources = utils.fileInProject(javaSourcesPath)
-tests = utils.fileInProject(testSourcesPath)
+sources = fileInProject(javaSourcesPath)
+tests = fileInProject(testSourcesPath)
 [sources, tests].each {
     def path = it.toPath()
     Files.walkFileTree(path, new FileVisitor<Path>() {
