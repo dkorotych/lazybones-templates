@@ -2,6 +2,7 @@ package maven
 
 import org.junit.Assert
 import spock.lang.Timeout
+import spock.lang.Unroll
 
 import java.nio.file.FileVisitResult
 import java.nio.file.Files
@@ -15,22 +16,45 @@ import java.util.concurrent.TimeUnit
  */
 class EquivalentGeneration extends MavenQuickstartTests {
 
+    @Unroll
     @Timeout(value = 5, unit = TimeUnit.MINUTES)
-    def "generation by template(1.3.1) should be equals generation by template(1.4)"() {
+    def "create project by template(1.3.2) should be equals create project by template(1.4). Lazybones(#lazybones)"() {
         setup:
-        File directoryFor131 = createProjectByTemplate('1.3.1')
-        File directoryFor14 = createProjectByTemplate('1.4')
+        File directoryFor132 = createProjectByTemplate(lazybones, '1.3.2')
+        File directoryFor14 = createProjectByTemplate(lazybones, '1.4')
 
         expect:
-        verifyDirectories(directoryFor131, directoryFor14)
+        verifyDirectories(directoryFor132, directoryFor14)
+
+        where:
+        lazybones << SUPPORTED_LAZYBONES_VERSIONS
     }
 
-    private File createProjectByTemplate(String version) {
+    @Unroll
+    @Timeout(value = 5, unit = TimeUnit.MINUTES)
+    def "logback support by template(1.0.1) should be equals logback support by template(1.0.2). Lazybones(#lazybones)"() {
+        setup:
+        File directoryFor132 = createProjectByTemplate(lazybones, '1.3.2', true)
+        File directoryFor14 = createProjectByTemplate(lazybones, '1.4', true)
+
+        expect:
+        verifyDirectories(directoryFor132, directoryFor14)
+
+        where:
+        lazybones << SUPPORTED_LAZYBONES_VERSIONS
+    }
+
+    private File createProjectByTemplate(String lazybones, String version, boolean withLogback = false) {
         File directory = File.createTempDir()
         List<String> commands = createCommands(version, null)
-        getLazybonesBuilder(false, javaVersion, SUPPORTED_LAZYBONES_VERSIONS.last(), commands, directory).
+        getLazybonesBuilder(false, javaVersion, lazybones, commands, directory).
                 start().
                 waitFor()
+        if (withLogback) {
+            getLazybonesBuilder(false, javaVersion, lazybones, ['generate', 'logback-support'], directory).
+                    start().
+                    waitFor()
+        }
         return directory
     }
 

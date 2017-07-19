@@ -1,3 +1,5 @@
+import org.apache.tools.ant.filters.ReplaceTokens
+
 buildscript {
     repositories {
         mavenLocal()
@@ -19,6 +21,7 @@ plugins {
 apply plugin: 'uk.co.cacoethes.lazybones-templates'
 apply from: "$rootDir/gradle/lazybones/lazybones.gradle"
 apply from: "$rootDir/gradle/functional-test.gradle"
+apply plugin: 'maven-publish'
 
 afterReleaseBuild.dependsOn publishAllTemplates
 
@@ -40,11 +43,41 @@ lazybones {
     template "maven-quickstart" includes "logback-support"
 }
 
+dependencies {
+    compile "org.codehaus.groovy:groovy-all:2.4.9"
+}
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            groupId 'com.github.dkorotych.lazybones-templates'
+            artifactId 'maven-utils'
+            version project.version - '-SNAPSHOT'
+            from components.java
+        }
+    }
+    repositories {
+        maven {
+            url "file://$projectDir/templates/maven-quickstart/.lazybones/repo"
+        }
+    }
+}
+
 task wrapper(type: Wrapper) {
     gradleVersion = '4.0'
 }
 
 functionalTest.dependsOn buildImages, installAllTemplates
+packageTemplateMavenQuickstart.dependsOn publish
+
+packageTemplateSubtmplLogbackSupport.with {
+    Publication publication = getUtilsPublication()
+    filter ReplaceTokens, tokens: [
+            "groupId"   : publication['groupId'],
+            "artifactId": publication['artifactId'],
+            "version"   : publication['version']
+    ]
+}
 
 ext {
     lastMavenQuickstartTemplateVersion = file('templates/maven-quickstart/VERSION').text.trim()
@@ -112,4 +145,20 @@ File createMavenApplication(String javaVersion, String lazybonesVersion, String 
         commands << "-P${it.key}=${it.value}".toString()
     }
     return executeLazybones(javaVersion, lazybonesVersion, commands)
+}
+
+task cleanUtilsRepository(type: Delete) {
+    group = 'build'
+    delete "${getPublishingExtension().repositories.getByName('maven').url}"
+    delete "${System.getProperty('user.home')}/.groovy/grapes/${getUtilsPublication()['groupId']}"
+}
+
+clean.dependsOn cleanUtilsRepository
+
+PublishingExtension getPublishingExtension() {
+    return project.extensions.getByType(PublishingExtension)
+}
+
+Publication getUtilsPublication() {
+    return getPublishingExtension().publications.getByName('maven')
 }
