@@ -1,6 +1,5 @@
 package maven
 
-import spock.lang.IgnoreRest
 import spock.lang.Timeout
 import spock.lang.Unroll
 
@@ -13,7 +12,6 @@ class TemplateNotWork extends MavenQuickstartTests {
 
     @Unroll
     @Timeout(value = 5, unit = TimeUnit.MINUTES)
-    @IgnoreRest
     def "template with version '#version' not work in Lazybones(#lazybones)"() {
         setup:
         File err = File.createTempFile(String.valueOf(lazybones), String.valueOf(version))
