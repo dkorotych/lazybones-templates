@@ -4,7 +4,6 @@
 import com.github.dkorotych.lazybones.templates.maven.Dependency
 import com.github.dkorotych.lazybones.templates.maven.PomProcessor
 import groovy.xml.MarkupBuilder
-import org.apache.commons.io.FileUtils
 
 def script = new GroovyScriptEngine('.lazybones').with {
     loadScriptByName('utils.groovy')
@@ -15,7 +14,7 @@ class Slf4JDependency extends Dependency {
     Slf4JDependency() {
         this.groupId = 'org.slf4j'
         this.version = '${slf4j.version}'
-        this.scope = 'runtime'
+        asRuntime()
     }
 }
 
@@ -26,8 +25,8 @@ dependencies = [
         new Slf4JDependency(artifactId: 'jul-to-slf4j'),
         new Slf4JDependency(artifactId: 'jcl-over-slf4j'),
         new Slf4JDependency(artifactId: 'log4j-over-slf4j'),
-        new Dependency(groupId: 'ch.qos.logback', artifactId: 'logback-classic', version: '1.2.3', scope: 'runtime',
-                exclusions: [slf4jApi])
+        new Dependency(groupId: 'ch.qos.logback', artifactId: 'logback-classic', version: '1.2.3',
+                exclusions: [slf4jApi]).asRuntime()
 ]
 
 pomProcessor = new PomProcessor(dependencies, this)
@@ -49,6 +48,6 @@ if (pomProcessor.processing) {
     log.info "Add logback and slf4j as project dependencies"
 
     // Copy configuration files
-    FileUtils.copyDirectoryToDirectory(new File(templateDir, "src"), projectDir)
+    copyDirectoryFromTemplate('src')
     log.info "Generate simple configuration files"
 }

@@ -12,11 +12,6 @@ import uk.co.cacoethes.handlebars.HandlebarsTemplateEngine
 import uk.co.cacoethes.util.NameType
 
 import java.nio.charset.StandardCharsets
-import java.nio.file.FileVisitResult
-import java.nio.file.FileVisitor
-import java.nio.file.Files
-import java.nio.file.Path
-import java.nio.file.attribute.BasicFileAttributes
 import java.text.SimpleDateFormat
 
 def script = new GroovyScriptEngine(".lazybones").with {
@@ -151,43 +146,10 @@ if (properties.useCheckstyleBackport) {
     processTemplates it, properties
 }
 
-packagePath = properties.packageName.replace('.' as char, '/' as char)
-
 // Move exists sources and tests to correct package
-sources = fileInProject(javaSourcesPath)
-tests = fileInProject(testSourcesPath)
-[sources, tests].each {
-    def path = it.toPath()
-    Files.walkFileTree(path, new FileVisitor<Path>() {
-        @Override
-        FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
-            return FileVisitResult.CONTINUE
-        }
-
-        @Override
-        FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-            relative = "${path.relativize(file.parent)}"
-            directory = new File("${path}/${packagePath}/${relative}")
-            directory.mkdirs()
-            file.toFile().renameTo(new File(directory, "${file.fileName}"))
-            def parent = file.parent.toFile()
-            if (parent.list().length == 0) {
-                parent.deleteDir()
-            }
-            return FileVisitResult.CONTINUE
-        }
-
-        @Override
-        FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
-            return FileVisitResult.TERMINATE
-        }
-
-        @Override
-        FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
-            return FileVisitResult.CONTINUE
-        }
-    })
-}
+moveTemplateSourcesToCorrectPackagePath(properties.packageName, {
+    fileInProject(it)
+}, javaSourcesPath, testSourcesPath)
 
 // For projects with git support generate .gitignore
 if (scmExclusionsFile) {

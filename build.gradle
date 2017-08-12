@@ -40,11 +40,12 @@ lazybones {
         repositoryApiKey = project.bintrayApiKey
     }
 
-    template "maven-quickstart" includes "logback-support"
+    template "maven-quickstart" includes "logback-support", "vertx-support"
 }
 
 dependencies {
     compile "org.codehaus.groovy:groovy-all:2.4.9"
+    compile "commons-io:commons-io:2.5"
 }
 
 publishing {
@@ -70,13 +71,15 @@ task wrapper(type: Wrapper) {
 functionalTest.dependsOn buildImages, installAllTemplates
 packageTemplateMavenQuickstart.dependsOn publish
 
-packageTemplateSubtmplLogbackSupport.with {
-    Publication publication = getUtilsPublication()
-    filter ReplaceTokens, tokens: [
-            "groupId"   : publication['groupId'],
-            "artifactId": publication['artifactId'],
-            "version"   : publication['version']
-    ]
+[packageTemplateSubtmplLogbackSupport, packageTemplateSubtmplVertxSupport].each { templateTask ->
+    templateTask.with {
+        Publication publication = getUtilsPublication()
+        filter ReplaceTokens, tokens: [
+                "groupId"   : publication['groupId'],
+                "artifactId": publication['artifactId'],
+                "version"   : publication['version']
+        ]
+    }
 }
 
 ext {

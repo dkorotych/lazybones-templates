@@ -13,6 +13,9 @@ abstract class MavenQuickstartTests extends AbstractLazybonesTests {
                                                              '1.4']
     protected static final int CORRECT_TEMPLATE_VERSION_INDEX = TEMPLATE_VERSIONS.indexOf('1.2.1')
 
+    protected static final String LOGBACK_SUPPORT = 'logback-support'
+    protected static final String VERTX_SUPPORT = 'vertx-support'
+
     protected static final ERROR_MESSAGE = 'Post install script caused an exception, project might be corrupt: ' +
             'No signature of method: java.io.ByteArrayInputStream.withCloseable()'
 
@@ -40,12 +43,16 @@ abstract class MavenQuickstartTests extends AbstractLazybonesTests {
         } else {
             commands = ['create', getRemoteTemplateString(templateVersion), '.']
         }
+        addProperties(properties, commands)
+        return commands
+    }
+
+    protected void addProperties(Map<String, String> properties, List<String> commands) {
         if (!properties?.isEmpty()) {
             properties.each {
                 commands << "-P${it.key}=${it.value}".toString()
             }
         }
-        return commands
     }
 
     protected void createProject(String lazybonesVersion, String templateVersion, Map<String, String> options) {
@@ -58,6 +65,19 @@ abstract class MavenQuickstartTests extends AbstractLazybonesTests {
         createProject(lazybonesVersion, templateVersion, null)
     }
 
+    protected void executeGeneration(String lazybones, String templateName, String javaSource = javaVersion,
+                                     File directory = projectDir, Map<String, String> options = null) {
+        List<String> commands = ['generate', templateName]
+        addProperties(options, commands)
+        getLazybonesBuilder(false, javaSource, lazybones, commands, directory).
+                start().
+                waitFor()
+    }
+
+    protected void executeGeneration(String lazybones, String templateName, Map<String, String> options) {
+        executeGeneration(lazybones, templateName, javaVersion, projectDir, options)
+    }
+
     protected GPathResult getPom() {
         new XmlSlurper(false, false).parse(new File(projectDir, 'pom.xml'))
     }
@@ -66,6 +86,18 @@ abstract class MavenQuickstartTests extends AbstractLazybonesTests {
         return pom.build.pluginManagement.plugins.'*'.find { plugin ->
             plugin.artifactId == 'maven-checkstyle-plugin'
         }
+    }
+
+    protected GPathResult assertDependencyByArtifactId(GPathResult path, String artifactId) {
+        assert path.'*'.find({
+            it.artifactId == artifactId
+        }).isEmpty() == false : "$artifactId not found"
+    }
+
+    protected GPathResult assertDependencyNotFoundByArtifactId(GPathResult path, String artifactId) {
+        assert path.'*'.find({
+            it.artifactId == artifactId
+        }).isEmpty() : "$artifactId exists"
     }
 
     @Memoized
@@ -80,6 +112,19 @@ abstract class MavenQuickstartTests extends AbstractLazybonesTests {
                         parameters << [version, template]
                     }
                 }
+            }
+        }
+        parameters
+    }
+
+    @MaxMemoized
+    protected static getValidVersionMatrixGreaterThen(String templateVersion) {
+        def index = TEMPLATE_VERSIONS.indexOf(templateVersion)
+        def parameters = []
+        def data = getValidVersionMatrix()
+        data.each { line ->
+            if (TEMPLATE_VERSIONS.indexOf(line[1]) >= index) {
+                parameters << line
             }
         }
         parameters

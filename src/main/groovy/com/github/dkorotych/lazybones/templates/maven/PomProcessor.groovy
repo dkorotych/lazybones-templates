@@ -107,6 +107,29 @@ class PomProcessor {
                 pom.dependencies << it
                 pom.dependencies << "\n${indent}"
             }
+            if (!(changes.build.extensions.isEmpty())) {
+                if (pom.build.extensions.isEmpty()) {
+                    pom.build << "${indent}"
+                    pom.build << changes.build.extensions
+                    pom.build << "\n${indent}"
+                } else {
+                    changes.build.extensions.'*'.each {
+                        pom.build.extensions << "${indent * 3}"
+                        pom.build.extensions << it
+                        pom.build.extensions << "\n${indent * 3}"
+                    }
+                }
+            }
+            changes.build.pluginManagement.plugins.'*'.each {
+                pom.build.pluginManagement.plugins << "${indent}"
+                pom.build.pluginManagement.plugins << it
+                pom.build.pluginManagement.plugins << "\n${indent * 3}"
+            }
+            changes.build.plugins.'*'.each {
+                pom.build.plugins << "${indent}"
+                pom.build.plugins << it
+                pom.build.plugins << "\n${indent * 2}"
+            }
         }
     }
 
