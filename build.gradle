@@ -96,7 +96,7 @@ tasks.addRule("Pattern: ${testTemplateMavenQuickstartByLazybonesPrefix}<version>
             def lazybonesVersion = taskName - testTemplateMavenQuickstartByLazybonesPrefix
 
             task("createMavenApplicationByLazybones${lazybonesVersion}",
-                    dependsOn: ['installTemplateMavenQuickstart', "buildImage${javaVersion}-${lazybonesVersion}"]) {
+                    dependsOn: ['installTemplateMavenQuickstart']) {
                 group = 'verification'
                 description = "Create application by 'MavenQuickstart' template by Lazybones ${lazybonesVersion}"
                 doLast {
