@@ -61,7 +61,7 @@ abstract class AbstractLazybonesTests extends Specification {
 
     @MaxMemoized
     private static String getImageName(String lazybonesVersion, String javaSource) {
-        return "lazybones:${lazybonesVersion}-jre${javaSource}".toString()
+        return "dkorotych/lazybones:${lazybonesVersion}-jre${javaSource}".toString()
     }
 
     private static String createVolume(String path) {
