@@ -32,7 +32,7 @@ class Utils {
 
     def askBoolean(String message, String defaultValue, String property) {
         def positiveAnswer = ['yes', 'true', 'ok', 'y']
-        String answer = ask("${message}. Positive answer is one of \'${positiveAnswer.join('\', \'')}\' [${defaultValue}]: ", defaultValue, property).toLowerCase()
+        String answer = ask("${message} Positive answer is one of \'${positiveAnswer.join('\', \'')}\' [${defaultValue}]: ", defaultValue, property).toLowerCase()
         return positiveAnswer.find {
             return it == answer
         }
