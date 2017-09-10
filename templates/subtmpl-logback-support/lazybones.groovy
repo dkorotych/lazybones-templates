@@ -45,9 +45,9 @@ if (pomProcessor.processing) {
     pomProcessor.process()
 
     pomProcessor.save()
-    log.info "Add logback and slf4j as project dependencies"
+    System.out.println "Add logback and slf4j as project dependencies"
 
     // Copy configuration files
     copyDirectoryFromTemplate('src')
-    log.info "Generate simple configuration files"
+    System.out.println "Generate simple configuration files"
 }
