@@ -1,6 +1,6 @@
 group: deprecated-2017Q3
 language: groovy
-before_install: "./gradlew clean buildImages"
+before_install: "./gradlew clean"
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
   - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
