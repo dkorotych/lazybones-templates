@@ -71,7 +71,7 @@ abstract class MavenQuickstartTests extends AbstractLazybonesTests {
         addProperties(options, commands)
         getLazybonesBuilder(false, javaSource, lazybones, commands, directory).
                 start().
-                waitFor()
+                waitForProcessOutput(System.out, System.err)
     }
 
     protected void executeGeneration(String lazybones, String templateName, Map<String, String> options) {
@@ -88,13 +88,13 @@ abstract class MavenQuickstartTests extends AbstractLazybonesTests {
         }
     }
 
-    protected GPathResult assertDependencyByArtifactId(GPathResult path, String artifactId) {
+    protected void assertDependencyByArtifactId(GPathResult path, String artifactId) {
         assert path.'*'.find({
             it.artifactId == artifactId
         }).isEmpty() == false : "$artifactId not found"
     }
 
-    protected GPathResult assertDependencyNotFoundByArtifactId(GPathResult path, String artifactId) {
+    protected void assertDependencyNotFoundByArtifactId(GPathResult path, String artifactId) {
         assert path.'*'.find({
             it.artifactId == artifactId
         }).isEmpty() : "$artifactId exists"

@@ -42,7 +42,6 @@ task functionalTest(type: Test, dependsOn: prepareFunctionalTestEnvironment) {
     mustRunAfter test
     maxParallelForks = Math.max(Runtime.getRuntime().availableProcessors() - 1, 1)
     exclude '**/PrepareEnvironment.*'
-//    include '**/ValidateVertXSupport.*'
 
     reports {
         html.setDestination(project.file("$html.destination/functional"))

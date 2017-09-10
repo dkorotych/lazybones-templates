@@ -46,21 +46,19 @@ dependencies = [
         new Dependency(groupId: 'javassist', artifactId: 'javassist', version: versions['javassist']).asRuntime()
 ]
 
-parameters.codegen = askBoolean('Need to add support for code generation?', 'yes', 'codegen')
-if (parameters.codegen) {
+codegen = askBoolean('Need to add support for code generation?', 'yes', 'codegen')
+if (codegen) {
     dependencies << new VertXDependency(artifactId: 'vertx-codegen').asOptional()
 }
 
-parameters.service = askBoolean('Need to add support for service proxy?', 'yes', 'service')
-if (parameters.codegen) {
+if (askBoolean('Need to add support for service proxy?', 'yes', 'service')) {
     dependencies << new VertXDependency(artifactId: 'vertx-service-proxy', classifier: 'processor')
-    if (!parameters.codegen) {
+    if (!codegen) {
         dependencies << new VertXDependency(artifactId: 'vertx-codegen').asOptional()
     }
 }
 
-parameters.web = askBoolean('Need to add support for web services?', 'yes', 'web')
-if (parameters.web) {
+if (askBoolean('Need to add support for web services?', 'yes', 'web')) {
     dependencies << new VertXDependency(artifactId: 'vertx-web-client')
     dependencies << new NettyDependency(artifactId: 'netty-tcnative-boringssl-static')
 }
@@ -171,7 +169,7 @@ if (pomProcessor.processing) {
     }
     pomProcessor.process()
     pomProcessor.save()
-    log.info "pom.xml was successfully modified"
+    System.out.println "pom.xml was successfully modified"
 
     // Add verticle example and test example
     processTemplates "src/**/*.java", parameters
@@ -179,7 +177,7 @@ if (pomProcessor.processing) {
         fileFromTemplateDirectory(it)
     }, 'src/main/java', 'src/test/java')
     copyDirectoryFromTemplate('src')
-    log.info "Added main verticle and test"
+    System.out.println "Added main verticle and test"
 
     // Add utility scripts
     ['bat', 'sh'].each {
@@ -187,5 +185,5 @@ if (pomProcessor.processing) {
         processTemplates "$name", parameters
         copyFileFromTemplate(name)
     }
-    log.info "Added utility scripts"
+    System.out.println "Added utility scripts"
 }

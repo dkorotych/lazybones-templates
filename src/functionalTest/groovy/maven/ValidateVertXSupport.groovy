@@ -1,6 +1,5 @@
 package maven
 
-import spock.lang.Ignore
 import spock.lang.Timeout
 import spock.lang.Unroll
 
@@ -13,7 +12,6 @@ class ValidateVertXSupport extends MavenQuickstartTests {
 
     @Unroll
     @Timeout(value = 5, unit = TimeUnit.MINUTES)
-    @Ignore
     def "validate vertx subtemplate. Lazybones(#lazybones), template(#version)"() {
         setup:
         createProject(lazybones, version)
@@ -38,22 +36,89 @@ class ValidateVertXSupport extends MavenQuickstartTests {
     @Unroll
     @Timeout(value = 5, unit = TimeUnit.MINUTES)
     def "validate vertx subtemplate. Codegeneration. Lazybones(#lazybones), template(#version)"() {
-        setup:
-        createProject(lazybones, version)
-
         when:
-        executeGeneration(lazybones, VERTX_SUPPORT, ['codegen': true])
+        createProject(lazybones, version)
+        executeGeneration(lazybones, VERTX_SUPPORT, ['service': false, 'codegen': true])
         def pom = getPom()
 
         then:
         assertDependencyByArtifactId(pom.dependencies, 'vertx-codegen')
 
         when:
-        executeGeneration(lazybones, VERTX_SUPPORT, ['codegen': false])
+        createProject(lazybones, version)
+        executeGeneration(lazybones, VERTX_SUPPORT, ['service': false, 'codegen': false])
         pom = getPom()
 
         then:
         assertDependencyNotFoundByArtifactId(pom.dependencies, 'vertx-codegen')
+
+        where:
+        [lazybones, version] << getTestData()
+    }
+
+    @Unroll
+    @Timeout(value = 5, unit = TimeUnit.MINUTES)
+    def "validate vertx subtemplate. Service Proxy. Lazybones(#lazybones), template(#version)"() {
+        when:
+        createProject(lazybones, version)
+        executeGeneration(lazybones, VERTX_SUPPORT, ['codegen': true, 'service': true])
+        def pom = getPom()
+
+        then:
+        assertDependencyByArtifactId(pom.dependencies, 'vertx-codegen')
+        assertDependencyByArtifactId(pom.dependencies, 'vertx-service-proxy')
+
+        when:
+        createProject(lazybones, version)
+        executeGeneration(lazybones, VERTX_SUPPORT, ['codegen': true, 'service': false])
+        pom = getPom()
+
+        then:
+        assertDependencyByArtifactId(pom.dependencies, 'vertx-codegen')
+        assertDependencyNotFoundByArtifactId(pom.dependencies, 'vertx-service-proxy')
+
+        when:
+        createProject(lazybones, version)
+        executeGeneration(lazybones, VERTX_SUPPORT, ['codegen': false, 'service': true])
+        pom = getPom()
+
+        then:
+        assertDependencyByArtifactId(pom.dependencies, 'vertx-codegen')
+        assertDependencyByArtifactId(pom.dependencies, 'vertx-service-proxy')
+
+        when:
+        createProject(lazybones, version)
+        executeGeneration(lazybones, VERTX_SUPPORT, ['codegen': false, 'service': false])
+        pom = getPom()
+
+        then:
+        assertDependencyNotFoundByArtifactId(pom.dependencies, 'vertx-codegen')
+        assertDependencyNotFoundByArtifactId(pom.dependencies, 'vertx-service-proxy')
+
+        where:
+        [lazybones, version] << getTestData()
+    }
+
+    @Unroll
+    @Timeout(value = 5, unit = TimeUnit.MINUTES)
+    def "validate vertx subtemplate. Web Client. Lazybones(#lazybones), template(#version)"() {
+        when:
+        createProject(lazybones, version)
+        executeGeneration(lazybones, VERTX_SUPPORT, ['web': true])
+        def pom = getPom()
+
+        then:
+        assertDependencyByArtifactId(pom.dependencies, 'vertx-web-client')
+        assertDependencyByArtifactId(pom.dependencies, 'netty-tcnative-boringssl-static')
+
+        when:
+        createProject(lazybones, version)
+        executeGeneration(lazybones, VERTX_SUPPORT, ['web': false])
+        pom = getPom()
+
+        then:
+        assertDependencyNotFoundByArtifactId(pom.dependencies, 'vertx-web-client')
+        assertDependencyNotFoundByArtifactId(pom.dependencies, 'netty-tcnative-boringssl-static')
 
         where:
         [lazybones, version] << getTestData()
