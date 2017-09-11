@@ -1,4 +1,3 @@
-group: deprecated-2017Q3
 language: groovy
 before_install:
   - chmod +x travis/before_install.sh
