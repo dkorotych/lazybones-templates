@@ -144,7 +144,7 @@ abstract class MavenQuickstartTests extends AbstractLazybonesTests {
 
     @MaxMemoized
     private String getRemoteTemplateString(String templateVersion) {
-        return "https://dl.bintray.com/dkorotych/lazybones-templates/maven-quickstart-template-${templateVersion}.zip".
+        return "http://dl.bintray.com/dkorotych/lazybones-templates/maven-quickstart-template-${templateVersion}.zip".
                 toString()
     }
 }
