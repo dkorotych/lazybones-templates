@@ -132,10 +132,9 @@ abstract class MavenQuickstartTests extends AbstractLazybonesTests {
 
     @MaxMemoized
     private boolean localTemplateExists(String templateVersion) {
-//        return new File("${System.getProperty("user.home")}/.lazybones/templates/maven-quickstart-"
-//                + "${templateVersion}.zip").
-//                exists()
-        return true
+        return new File("${System.getProperty("user.home")}/.lazybones/templates/maven-quickstart-"
+                + "${templateVersion}.zip").
+                exists()
     }
 
     @MaxMemoized
