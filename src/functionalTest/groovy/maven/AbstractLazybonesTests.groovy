@@ -19,6 +19,12 @@ abstract class AbstractLazybonesTests extends Specification {
         def userHome = System.getProperty("user.home")
         new File("$userHome/.lazybones/templates").mkdirs()
         new File("$userHome/.groovy").mkdirs()
+        new File("$userHome/.lazybones/config.groovy").text = '''
+bintrayRepositories = [
+    "dkorotych/lazybones-templates",
+    "pledbrook/lazybones-templates"
+]
+'''
     }
 
     def setup() {
