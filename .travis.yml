@@ -1,4 +1,3 @@
-sudo: true
 language: groovy
 before_install:
   - chmod +x travis/before_install.sh
