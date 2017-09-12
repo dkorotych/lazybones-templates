@@ -1,6 +1,7 @@
 language: groovy
 before_install:
   - chmod +x travis/before_install.sh
+  - chmod +x travis/download_templates.sh
   - travis/before_install.sh
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
