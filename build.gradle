@@ -137,7 +137,7 @@ File createMavenApplication(String javaVersion, String lazybonesVersion, String 
     if (localTemplate.exists()) {
         commands = ['create', 'maven-quickstart', "${templateVersion}".toString(), '.']
     } else {
-        commands = ['create', "http://dl.bintray.com/${lazybones.repositoryName}/maven-quickstart-template-"
+        commands = ['create', "https://dl.bintray.com/${lazybones.repositoryName}/maven-quickstart-template-"
                 + "${templateVersion}.zip".toString(), '.']
     }
     def key = 'source'
