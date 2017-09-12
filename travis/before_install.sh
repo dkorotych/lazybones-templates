@@ -12,4 +12,6 @@ if [ $TRAVIS_JDK_VERSION == "openjdk7" ]; then
     echo "security.provider.1=org.bouncycastle.jce.provider.BouncyCastleProvider" | sudo tee -a /etc/java-7-openjdk/security/java.security
 fi
 
+travis/download_templates.sh
+
 ./gradlew clean
