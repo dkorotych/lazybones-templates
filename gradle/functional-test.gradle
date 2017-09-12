@@ -40,7 +40,7 @@ task functionalTest(type: Test, dependsOn: prepareFunctionalTestEnvironment) {
     testClassesDirs = sourceSets.functionalTest.output.classesDirs
     classpath = sourceSets.functionalTest.runtimeClasspath
     mustRunAfter test
-    maxParallelForks = Math.max(Runtime.getRuntime().availableProcessors() - 1, 1)
+//    maxParallelForks = Math.max(Runtime.getRuntime().availableProcessors() - 1, 1)
     exclude '**/PrepareEnvironment.*'
 
     reports {
