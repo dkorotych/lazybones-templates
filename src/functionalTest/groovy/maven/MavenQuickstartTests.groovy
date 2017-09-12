@@ -58,7 +58,7 @@ abstract class MavenQuickstartTests extends AbstractLazybonesTests {
     protected void createProject(String lazybonesVersion, String templateVersion, Map<String, String> options) {
         getMavenQuickstartBuilder(lazybonesVersion, templateVersion, options)
                 .start()
-                .waitForProcessOutput(System.out, System.err)
+                .waitFor()
     }
 
     protected void createProject(String lazybonesVersion, String templateVersion) {
@@ -71,7 +71,7 @@ abstract class MavenQuickstartTests extends AbstractLazybonesTests {
         addProperties(options, commands)
         getLazybonesBuilder(false, javaSource, lazybones, commands, directory).
                 start().
-                waitForProcessOutput(System.out, System.err)
+                waitFor()
     }
 
     protected void executeGeneration(String lazybones, String templateName, Map<String, String> options) {
