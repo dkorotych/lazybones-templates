@@ -47,13 +47,9 @@ class EquivalentGeneration extends MavenQuickstartTests {
     private File createProjectByTemplate(String lazybones, String version, boolean withLogback = false) {
         File directory = File.createTempDir()
         List<String> commands = createCommands(version, null)
-        getLazybonesBuilder(false, javaVersion, lazybones, commands, directory).
-                start().
-                waitFor()
+        startProcess getLazybonesBuilder(false, javaVersion, lazybones, commands, directory)
         if (withLogback) {
-            getLazybonesBuilder(false, javaVersion, lazybones, ['generate', 'logback-support'], directory).
-                    start().
-                    waitFor()
+            executeGeneration(lazybones, LOGBACK_SUPPORT, javaVersion, directory)
         }
         return directory
     }

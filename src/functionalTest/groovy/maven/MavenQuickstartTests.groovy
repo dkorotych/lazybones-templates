@@ -55,6 +55,14 @@ abstract class MavenQuickstartTests extends AbstractLazybonesTests {
         }
     }
 
+    protected void startProcess(ProcessBuilder builder) {
+        Process process = builder.
+                inheritIO().
+                start()
+        process.waitFor()
+        assert process.exitValue() == 0, "Incorrect exit code (${process.exitValue()}) after execute process"
+    }
+
     protected void createProject(String lazybonesVersion, String templateVersion, Map<String, String> options) {
         startProcess getMavenQuickstartBuilder(lazybonesVersion, templateVersion, options)
     }
@@ -142,13 +150,5 @@ abstract class MavenQuickstartTests extends AbstractLazybonesTests {
     private String getRemoteTemplateString(String templateVersion) {
         return "https://dl.bintray.com/dkorotych/lazybones-templates/maven-quickstart-template-${templateVersion}.zip".
                 toString()
-    }
-
-    private void startProcess(ProcessBuilder builder) {
-        Process process = builder.
-                inheritIO().
-                start()
-        process.waitFor()
-        assert process.exitValue() == 0, "Incorrect exit code (${process.exitValue()}) after execute process"
     }
 }
