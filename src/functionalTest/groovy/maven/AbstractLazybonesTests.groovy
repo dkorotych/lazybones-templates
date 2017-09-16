@@ -38,6 +38,8 @@ abstract class AbstractLazybonesTests extends Specification {
         commands << getTemplatesVolume()
         commands << '--volume'
         commands << getGroovyCacheVolume()
+        commands << '--user'
+        commands << 'root:root'
         commands << getImageName(lazybonesVersion, javaSource)
         commands.addAll(lazybonesCommands)
         new ProcessBuilder(commands).

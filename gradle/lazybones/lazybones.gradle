@@ -19,6 +19,7 @@ ext {
                         '--volume', "${userHome + templates}:${home + templates}",
                         '--volume', "${userHome + groovy}:${home + groovy}",
                         '--volume', "${userHome + maven}:${home + maven}",
+                        '--user root:root',
                         createTag(javaVersion, lazybonesVersion)]
         lazybonesCommands?.each {
             commands << it
