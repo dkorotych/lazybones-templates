@@ -1,5 +1,7 @@
 language: groovy
-before_install: "./gradlew buildImages"
+before_install:
+  - chmod +x travis/before_install.sh
+  - travis/before_install.sh
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
   - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
@@ -13,6 +15,7 @@ cache:
 services:
   docker
 jdk:
-  - oraclejdk7
+  - openjdk7
   - oraclejdk8
+  - openjdk8
 script: "./gradlew check testTemplateMavenQuickstart"

@@ -9,6 +9,7 @@ The current list contains the following templates
 
 * [maven-quickstart]: Quick start a base [Maven](http://maven.apache.org) application
   * Additional support for [logback](http://logback.qos.ch)
+  * Additional support for [Vert.x](http://vertx.io)
 
 ## How To
 

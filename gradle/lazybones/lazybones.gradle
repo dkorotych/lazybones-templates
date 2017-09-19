@@ -9,11 +9,17 @@ ext {
     }
     executeLazybones = { String javaVersion, String lazybonesVersion, List<String> lazybonesCommands ->
         def directory = Files.createTempDirectory(buildDir.toPath(), "lazybones").toFile()
-        def home = '/home/lazybones'
-        def path = '/.lazybones/templates'
+        def home = '/root'
+        def templates = '/.lazybones/templates'
+        def groovy = '/.groovy'
+        def maven = '/.m2/repository'
+        def userHome = System.getProperty("user.home")
         def commands = ['docker', 'run', '--rm',
-                        '--volume', "${directory}:${home}/app",
-                        '--volume', "${System.getProperty("user.home") + path}:${home + path}",
+                        '-v', "${directory}:/home/lazybones/app",
+                        '-v', "${userHome + templates}:${home + templates}",
+                        '-v', "${userHome + groovy}:${home + groovy}",
+                        '-v', "${userHome + maven}:${home + maven}",
+                        '--user', 'root',
                         createTag(javaVersion, lazybonesVersion)]
         lazybonesCommands?.each {
             commands << it
@@ -26,64 +32,13 @@ ext {
     }
 }
 
-def buildImagePrefix = 'buildImage'
-tasks.addRule("Pattern: ${buildImagePrefix}<source>-<version> " +
-        "(where source is one of ${supportedJavaVersions} and version is one of ${supportedLazybonesVersions})" +
-        " - Build Docker image with Lazybones <version> on Java <source>") {
-    String taskName ->
-        if (taskName.startsWith(buildImagePrefix)) {
-            String[] parts = (taskName - buildImagePrefix).split('-')
-            String source = parts[0]
-            String version = parts[1]
-            String tag = createTag(source, version)
-            task(taskName) {
-                group = 'verification'
-                description = "Build Docker image with Lazybones ${version} on Java ${source}"
-                String baseImage = "openjdk:${source}-jre-alpine"
-                doLast {
-                    exec {
-                        commandLine 'docker', 'pull', baseImage
-                    }
-                    exec {
-                        commandLine 'docker', 'tag', baseImage, 'java:virtual-jre-alpine'
-                    }
-                    exec {
-                        workingDir "${rootDir}/gradle/lazybones/docker"
-                        commandLine 'docker', 'build', '.', '--tag', tag,
-                                '--build-arg', "LAZYBONES_VERSION=${version}"
-                    }
-                }
-                onlyIf {
-                    def output = new ByteArrayOutputStream()
-                    exec {
-                        commandLine 'docker', 'images', tag, '--quiet'
-                        standardOutput = output
-                    }
-                    return output.toString().trim().isEmpty()
-                }
-            }
-        }
-}
-
-task buildImages {
-    group = 'verification'
-    description = 'Build all Docker images'
-}
-supportedJavaVersions.each { source ->
-    supportedLazybonesVersions.each { version ->
-        buildImages.dependsOn << "buildImage${source}-${version}"
-    }
-}
-
 task removeImages(type: Exec) {
     List<String> items = ['docker', 'rmi', '--force']
     supportedJavaVersions.each { source ->
         supportedLazybonesVersions.each { version ->
             items << createTag(source, version)
         }
-        items << "openjdk:${source}-jre-alpine"
     }
-    items << "java:virtual-jre-alpine"
     commandLine = items
     ignoreExitValue = true
 }
@@ -91,5 +46,5 @@ task removeImages(type: Exec) {
 clean.dependsOn removeImages
 
 def createTag(source, version) {
-    "lazybones:${version}-jre${source}"
+    "dkorotych/lazybones:${version}-jre${source}"
 }

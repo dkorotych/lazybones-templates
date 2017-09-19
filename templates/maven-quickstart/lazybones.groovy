@@ -12,23 +12,16 @@ import uk.co.cacoethes.handlebars.HandlebarsTemplateEngine
 import uk.co.cacoethes.util.NameType
 
 import java.nio.charset.StandardCharsets
-import java.nio.file.FileVisitResult
-import java.nio.file.FileVisitor
-import java.nio.file.Files
-import java.nio.file.Path
-import java.nio.file.attribute.BasicFileAttributes
 import java.text.SimpleDateFormat
 
-def askPredefined(String message, String defaultValue, List<String> answers, String property) {
-    message = "${message}. Choices are \'${answers.join('\', \'')}\' [${defaultValue}]: "
-    answers = answers.each {
-        it.toLowerCase()
-    }
-    answer = ''
-    while (!answers.contains(answer)) {
-        answer = ask(message, defaultValue, property).toLowerCase()
-    }
-    return answer
+def script = new GroovyScriptEngine(".lazybones").with {
+    loadScriptByName('utils.groovy')
+}
+this.metaClass.mixin script
+
+def askChoices(String message, String defaultValue, List<String> answers, String property) {
+    return askPredefined("${message}. Choices are \'${answers.join('\', \'')}\' [${defaultValue}]: ",
+        defaultValue, answers, property, false)
 }
 
 // Disable debug messages from HandlebarsTemplateEngine
@@ -80,10 +73,9 @@ properties.source = ask("Define value for 'source version' [1.8]: ", "1.8", "sou
 
 properties.inceptionYear = new SimpleDateFormat("YYYY").format(new Date())
 
-defaultValue = "${properties.groupId.toLowerCase().contains('github') ? '[Y/n]' : 'N/y'}"
-properties.github = ask("Project will be placed on GitHub? ${defaultValue}: ", "${defaultValue}", "github")
-if (properties.github == '[Y/n]' || properties.github == 'Y' || properties.github == 'y') {
-    properties.github = true
+defaultValue = "${properties.groupId.toLowerCase().contains('github') ? 'yes' : 'no'}"
+properties.github = askBoolean('Project will be placed on GitHub?', defaultValue, 'github')
+if (properties.github) {
     def repo = "https://github.com/${username}/${properties.artifactId}"
     properties.url = repo
     properties.issueManagement = [
@@ -94,11 +86,9 @@ if (properties.github == '[Y/n]' || properties.github == 'Y' || properties.githu
         "url"                : "${repo}.git",
         "developerConnection": "scm:git:git@github.com:${username}/${properties.artifactId}.git"
     ]
-} else {
-    properties.github = false
 }
 
-properties.checkstyleConfig = askPredefined("Define value for checkstyle configuration", 'custom', ['custom', 'sun', 'google'], "checkstyleConfig")
+properties.checkstyleConfig = askChoices("Define value for checkstyle configuration", 'custom', ['custom', 'sun', 'google'], "checkstyleConfig")
 switch (properties.checkstyleConfig) {
     case 'custom':
         properties.checkstyle = [
@@ -118,13 +108,13 @@ switch (properties.checkstyleConfig) {
         break
 }
 if (properties.checkstyleConfig != 'custom') {
-    new File(projectDir, 'config/checkstyle').deleteDir()
+    fileInProject('config/checkstyle').deleteDir()
 }
 
 // Create sources directories
 ["main", "test"].each { parent ->
     ["java", "resources"].each { dir ->
-        new File(projectDir, "src/${parent}/${dir}").mkdirs()
+        fileInProject("src/${parent}/${dir}").mkdirs()
     }
 }
 javaSourcesPath = 'src/main/java'
@@ -134,14 +124,14 @@ testSourcesPath = 'src/test/java'
 source = (properties.source as String).replace("1.", "") as Integer
 if (source < 8) {
     ["CharSequenceUtils", "CollectionUtils"].each { name ->
-        new File(projectDir, "${javaSourcesPath}/utils/${name}.java").delete()
-        new File(projectDir, "${testSourcesPath}/utils/${name}Test.java").delete()
+        fileInProject("${javaSourcesPath}/utils/${name}.java").delete()
+        fileInProject("${testSourcesPath}/utils/${name}Test.java").delete()
     }
-    def utils = new File(projectDir, "${javaSourcesPath}/utils")
-    def list = utils.list()
+    def utilPackage = fileInProject("${javaSourcesPath}/utils")
+    def list = utilPackage.list()
     def packageInfoFileName = 'package-info.java'
     if (list != null && (list.length == 0 || (list.length == 1 && list[0] == packageInfoFileName))) {
-        utils.deleteDir()
+        utilPackage.deleteDir()
     }
     properties.useCheckstyleBackport = true
 }
@@ -156,43 +146,10 @@ if (properties.useCheckstyleBackport) {
     processTemplates it, properties
 }
 
-packagePath = properties.packageName.replace('.' as char, '/' as char)
-
 // Move exists sources and tests to correct package
-sources = new File(projectDir, javaSourcesPath)
-tests = new File(projectDir, testSourcesPath)
-[sources, tests].each {
-    def path = it.toPath()
-    Files.walkFileTree(path, new FileVisitor<Path>() {
-        @Override
-        FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
-            return FileVisitResult.CONTINUE
-        }
-
-        @Override
-        FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-            relative = "${path.relativize(file.parent)}"
-            directory = new File("${path}/${packagePath}/${relative}")
-            directory.mkdirs()
-            file.toFile().renameTo(new File(directory, "${file.fileName}"))
-            def parent = file.parent.toFile()
-            if (parent.list().length == 0) {
-                parent.deleteDir()
-            }
-            return FileVisitResult.CONTINUE
-        }
-
-        @Override
-        FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
-            return FileVisitResult.TERMINATE
-        }
-
-        @Override
-        FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
-            return FileVisitResult.CONTINUE
-        }
-    })
-}
+moveTemplateSourcesToCorrectPackagePath(properties.packageName, {
+    fileInProject(it)
+}, javaSourcesPath, testSourcesPath)
 
 // For projects with git support generate .gitignore
 if (scmExclusionsFile) {

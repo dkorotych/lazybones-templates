@@ -1,3 +1,5 @@
+import org.apache.tools.ant.filters.ReplaceTokens
+
 buildscript {
     repositories {
         mavenLocal()
@@ -12,13 +14,14 @@ buildscript {
 }
 
 plugins {
-    id 'net.researchgate.release' version '2.3.5'
+    id 'net.researchgate.release' version '2.6.0'
     id "com.github.dkorotych.gradle-maven-exec" version "1.1"
 }
 
 apply plugin: 'uk.co.cacoethes.lazybones-templates'
 apply from: "$rootDir/gradle/lazybones/lazybones.gradle"
 apply from: "$rootDir/gradle/functional-test.gradle"
+apply plugin: 'maven-publish'
 
 afterReleaseBuild.dependsOn publishAllTemplates
 
@@ -37,14 +40,47 @@ lazybones {
         repositoryApiKey = project.bintrayApiKey
     }
 
-    template "maven-quickstart" includes "logback-support"
+    template "maven-quickstart" includes "logback-support", "vertx-support"
+}
+
+dependencies {
+    compile "org.codehaus.groovy:groovy-all:2.4.9"
+    compile "commons-io:commons-io:2.5"
+}
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            groupId 'com.github.dkorotych.lazybones-templates'
+            artifactId 'maven-utils'
+            version project.version - '-SNAPSHOT'
+            from components.java
+        }
+    }
+    repositories {
+        maven {
+            url "file://$projectDir/templates/maven-quickstart/.lazybones/repo"
+        }
+    }
 }
 
 task wrapper(type: Wrapper) {
     gradleVersion = '4.0'
 }
 
-functionalTest.dependsOn buildImages, installAllTemplates
+functionalTest.dependsOn installAllTemplates
+packageTemplateMavenQuickstart.dependsOn publish
+
+[packageTemplateSubtmplLogbackSupport, packageTemplateSubtmplVertxSupport].each { templateTask ->
+    templateTask.with {
+        Publication publication = getUtilsPublication()
+        filter ReplaceTokens, tokens: [
+                "groupId"   : publication['groupId'],
+                "artifactId": publication['artifactId'],
+                "version"   : publication['version']
+        ]
+    }
+}
 
 ext {
     lastMavenQuickstartTemplateVersion = file('templates/maven-quickstart/VERSION').text.trim()
@@ -60,7 +96,7 @@ tasks.addRule("Pattern: ${testTemplateMavenQuickstartByLazybonesPrefix}<version>
             def lazybonesVersion = taskName - testTemplateMavenQuickstartByLazybonesPrefix
 
             task("createMavenApplicationByLazybones${lazybonesVersion}",
-                    dependsOn: ['installTemplateMavenQuickstart', "buildImage${javaVersion}-${lazybonesVersion}"]) {
+                    dependsOn: ['installTemplateMavenQuickstart']) {
                 group = 'verification'
                 description = "Create application by 'MavenQuickstart' template by Lazybones ${lazybonesVersion}"
                 doLast {
@@ -112,4 +148,20 @@ File createMavenApplication(String javaVersion, String lazybonesVersion, String 
         commands << "-P${it.key}=${it.value}".toString()
     }
     return executeLazybones(javaVersion, lazybonesVersion, commands)
+}
+
+task cleanUtilsRepository(type: Delete) {
+    group = 'build'
+    delete "${getPublishingExtension().repositories.getByName('maven').url}"
+    delete "${System.getProperty('user.home')}/.groovy/grapes/${getUtilsPublication()['groupId']}"
+}
+
+clean.dependsOn cleanUtilsRepository
+
+PublishingExtension getPublishingExtension() {
+    return project.extensions.getByType(PublishingExtension)
+}
+
+Publication getUtilsPublication() {
+    return getPublishingExtension().publications.getByName('maven')
 }

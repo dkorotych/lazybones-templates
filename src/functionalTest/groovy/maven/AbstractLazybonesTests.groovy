@@ -13,29 +13,26 @@ abstract class AbstractLazybonesTests extends Specification {
     TemporaryFolder temporaryFolder = new TemporaryFolder()
     File projectDir
 
-    def setupSpec() {
-        def userHome = System.getProperty("user.home")
-        new File("$userHome/.lazybones/templates").mkdirs()
-        new File("$userHome/.groovy").mkdirs()
-    }
-
     def setup() {
         projectDir = temporaryFolder.root
     }
 
-    def ProcessBuilder getLazybonesBuilder(boolean interactive, String javaSource, String lazybonesVersion,
-                                           List<String> lazybonesCommands, File directory = projectDir) {
+    ProcessBuilder getLazybonesBuilder(boolean interactive, String javaSource, String lazybonesVersion,
+                                       List<String> lazybonesCommands, File directory = projectDir) {
+        setPermissions(directory)
         List<String> commands = ['docker', 'run', '--rm']
         if (interactive) {
             commands << '--interactive'
             commands << '--tty'
         }
-        commands << '--volume'
+        commands << '-v'
         commands << getProjectPathVolume(directory)
-        commands << '--volume'
+        commands << '-v'
         commands << getTemplatesVolume()
-        commands << '--volume'
+        commands << '-v'
         commands << getGroovyCacheVolume()
+        commands << '--user'
+        commands << 'root'
         commands << getImageName(lazybonesVersion, javaSource)
         commands.addAll(lazybonesCommands)
         new ProcessBuilder(commands).
@@ -44,21 +41,36 @@ abstract class AbstractLazybonesTests extends Specification {
 
     @Memoized
     private String getProjectPathVolume(File directory) {
-        return "${directory.absolutePath}:/home/lazybones/app".toString()
+        return "${directory.canonicalPath}:/home/lazybones/app".toString()
     }
 
     @Memoized
     private static String getTemplatesVolume() {
-        return "${System.getProperty("user.home")}/.lazybones/templates:/home/lazybones/.lazybones/templates".toString()
+        return createVolume('.lazybones/templates')
     }
 
     @Memoized
     private static String getGroovyCacheVolume() {
-        return "${System.getProperty("user.home")}/.groovy:/home/lazybones/.groovy".toString()
+        return createVolume('.groovy')
     }
 
     @MaxMemoized
     private static String getImageName(String lazybonesVersion, String javaSource) {
-        return "lazybones:${lazybonesVersion}-jre${javaSource}".toString()
+        return "dkorotych/lazybones:${lazybonesVersion}-jre${javaSource}".toString()
+    }
+
+    private static String createVolume(String path) {
+        File directory = new File("${System.getProperty("user.home")}/$path")
+        if (!directory.exists()) {
+            directory.mkdirs()
+            setPermissions(directory)
+        }
+        return "${directory.canonicalPath}:/root/$path".toString()
+    }
+
+    private static void setPermissions(File directory) {
+        directory.setReadable(true, false)
+        directory.setWritable(true, false)
+        directory.setExecutable(true, false)
     }
 }

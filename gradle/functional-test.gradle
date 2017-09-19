@@ -15,13 +15,33 @@ sourceSets {
     }
 }
 
-task functionalTest(type: Test) {
+task prepareFunctionalTestEnvironment(type: Test) {
+    description = 'Prepare functional tests environment'
+    group = 'verification'
+    testClassesDirs = sourceSets.functionalTest.output.classesDirs
+    classpath = sourceSets.functionalTest.runtimeClasspath
+
+    reports {
+        html.setDestination(project.file("$html.destination/functional"))
+        junitXml.setDestination(project.file("$junitXml.destination/functional"))
+    }
+
+    beforeTest { descriptor ->
+        logger.lifecycle "$descriptor.name"
+    }
+
+    maxParallelForks = 1
+    include '**/PrepareEnvironment.*'
+}
+
+task functionalTest(type: Test, dependsOn: prepareFunctionalTestEnvironment) {
     description = 'Runs the functional tests.'
     group = 'verification'
     testClassesDirs = sourceSets.functionalTest.output.classesDirs
     classpath = sourceSets.functionalTest.runtimeClasspath
     mustRunAfter test
     maxParallelForks = Math.max(Runtime.getRuntime().availableProcessors() - 1, 1)
+    exclude '**/PrepareEnvironment.*'
 
     reports {
         html.setDestination(project.file("$html.destination/functional"))
@@ -30,6 +50,11 @@ task functionalTest(type: Test) {
 
     beforeTest { descriptor ->
         logger.lifecycle "Running test: $descriptor.name"
+    }
+
+    testLogging {
+        exceptionFormat "full"
+        showStandardStreams = true
     }
 }
 
