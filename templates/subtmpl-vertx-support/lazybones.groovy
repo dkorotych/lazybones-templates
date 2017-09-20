@@ -13,7 +13,7 @@ this.metaClass.mixin script
 def versions = [
         'vertx'    : '3.4.2',
         'netty'    : '4.1.8.Final',
-        'shade'    : '3.0.0',
+        'shade'    : '3.1.0',
         'exec'     : '1.6.0',
         'javassist': '3.12.1.GA',
         'os'       : '1.5.0.Final'
