@@ -27,7 +27,7 @@
     </issueManagement>
 {{/if}}
     <prerequisites>
-        <maven>3.0.1</maven>
+        <maven>3.5.0</maven>
     </prerequisites>
 
     <properties>
