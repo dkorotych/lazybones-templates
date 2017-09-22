@@ -122,7 +122,7 @@ abstract class MavenQuickstartTests extends AbstractLazybonesTests {
     }
 
     @MaxMemoized
-    protected static getValidVersionMatrixGreaterThen(String templateVersion) {
+    protected static getValidVersionMatrixEqualOrGreaterThen(String templateVersion) {
         def index = TEMPLATE_VERSIONS.indexOf(templateVersion)
         def parameters = []
         def data = getValidVersionMatrix()
