@@ -125,6 +125,6 @@ class ValidateVertXSupport extends MavenQuickstartTests {
     }
 
     private List getTestData() {
-        return getValidVersionMatrixGreaterThen('1.4')
+        return getValidVersionMatrixEqualOrGreaterThen('1.4')
     }
 }

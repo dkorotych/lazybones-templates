@@ -14,42 +14,6 @@
         <property name="file" value="${checkstyle.suppressions.file}"/>
     </module>
 
-    <module name="SuppressionCommentFilter">
-        <property name="offCommentFormat" value="CHECKSTYLE OFF\: ALL"/>
-        <property name="onCommentFormat" value="CHECKSTYLE ON\: ALL"/>
-        <property name="checkFormat" value=".*"/>
-    </module>
-
-    <module name="SuppressionCommentFilter">
-        <property name="offCommentFormat" value="CHECKSTYLE OFF\: ([\w\|]+)"/>
-        <property name="onCommentFormat" value="CHECKSTYLE ON\: ([\w\|]+)"/>
-        <property name="checkFormat" value="$1"/>
-    </module>
-
-    <module name="SuppressWithNearbyCommentFilter">
-        <property name="commentFormat" value="CHECKSTYLE IGNORE ALL FOR NEXT LINE"/>
-        <property name="checkFormat" value=".*"/>
-        <property name="influenceFormat" value="1"/>
-    </module>
-
-    <module name="SuppressWithNearbyCommentFilter">
-        <property name="commentFormat" value="CHECKSTYLE IGNORE (\w+) FOR NEXT LINE"/>
-        <property name="checkFormat" value="$1"/>
-        <property name="influenceFormat" value="1"/>
-    </module>
-
-    <module name="SuppressWithNearbyCommentFilter">
-        <property name="commentFormat" value="CHECKSTYLE IGNORE ALL FOR NEXT (\d+) LINES"/>
-        <property name="checkFormat" value=".*"/>
-        <property name="influenceFormat" value="$1"/>
-    </module>
-
-    <module name="SuppressWithNearbyCommentFilter">
-        <property name="commentFormat" value="CHECKSTYLE IGNORE (\w+) FOR NEXT (\d+) LINES"/>
-        <property name="checkFormat" value="$1"/>
-        <property name="influenceFormat" value="$2"/>
-    </module>
-
     <!-- Checks that a package-info.java file exists for each package.     -->
     <!-- See http://checkstyle.sf.net/config_javadoc.html#JavadocPackage -->
     <module name="JavadocPackage"/>
@@ -89,6 +53,42 @@
     <!-- </module> -->
 
     <module name="TreeWalker">
+
+        <module name="SuppressionCommentFilter">
+            <property name="offCommentFormat" value="CHECKSTYLE OFF\: ALL"/>
+            <property name="onCommentFormat" value="CHECKSTYLE ON\: ALL"/>
+            <property name="checkFormat" value=".*"/>
+        </module>
+
+        <module name="SuppressionCommentFilter">
+            <property name="offCommentFormat" value="CHECKSTYLE OFF\: ([\w\|]+)"/>
+            <property name="onCommentFormat" value="CHECKSTYLE ON\: ([\w\|]+)"/>
+            <property name="checkFormat" value="$1"/>
+        </module>
+
+        <module name="SuppressWithNearbyCommentFilter">
+            <property name="commentFormat" value="CHECKSTYLE IGNORE ALL FOR NEXT LINE"/>
+            <property name="checkFormat" value=".*"/>
+            <property name="influenceFormat" value="1"/>
+        </module>
+
+        <module name="SuppressWithNearbyCommentFilter">
+            <property name="commentFormat" value="CHECKSTYLE IGNORE (\w+) FOR NEXT LINE"/>
+            <property name="checkFormat" value="$1"/>
+            <property name="influenceFormat" value="1"/>
+        </module>
+
+        <module name="SuppressWithNearbyCommentFilter">
+            <property name="commentFormat" value="CHECKSTYLE IGNORE ALL FOR NEXT (\d+) LINES"/>
+            <property name="checkFormat" value=".*"/>
+            <property name="influenceFormat" value="$1"/>
+        </module>
+
+        <module name="SuppressWithNearbyCommentFilter">
+            <property name="commentFormat" value="CHECKSTYLE IGNORE (\w+) FOR NEXT (\d+) LINES"/>
+            <property name="checkFormat" value="$1"/>
+            <property name="influenceFormat" value="$2"/>
+        </module>
 
         <!-- Checks for Javadoc comments.                     -->
         <!-- See http://checkstyle.sf.net/config_javadoc.html -->
@@ -220,7 +220,6 @@
         <module name="AvoidNestedBlocks"/>
         <module name="EmptyBlock"/>
         <module name="LeftCurly">
-            <property name="maxLineLength" value="120"/>
             <property name="severity" value="error"/>
         </module>
         <module name="NeedBraces"/>

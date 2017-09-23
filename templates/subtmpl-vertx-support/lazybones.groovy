@@ -3,6 +3,7 @@
 
 import com.github.dkorotych.lazybones.templates.maven.Dependency
 import com.github.dkorotych.lazybones.templates.maven.PomProcessor
+import com.github.dkorotych.lazybones.templates.maven.RuleSetProcessor
 import groovy.xml.MarkupBuilder
 
 def script = new GroovyScriptEngine('.lazybones').with {
@@ -13,7 +14,7 @@ this.metaClass.mixin script
 def versions = [
         'vertx'    : '3.4.2',
         'netty'    : '4.1.8.Final',
-        'shade'    : '3.0.0',
+        'shade'    : '3.1.0',
         'exec'     : '1.6.0',
         'javassist': '3.12.1.GA',
         'os'       : '1.5.0.Final'
@@ -186,4 +187,29 @@ if (pomProcessor.processing) {
         copyFileFromTemplate(name)
     }
     System.out.println "Added utility scripts"
+
+    ruleSetProcessor = new RuleSetProcessor(this)
+    builder = ruleSetProcessor.createMarkupBuilder()
+    builder.ruleset {
+        rules {
+            rule(groupId: 'com.fasterxml.jackson.core', artifactId: 'jackson-core') {
+                ignoreVersions {
+                    ignoreVersion(type: 'regex', '.*')
+                }
+            }
+            rule(groupId: 'com.fasterxml.jackson.core', artifactId: 'jackson-databind') {
+                ignoreVersions {
+                    ignoreVersion(type: 'regex', '.*')
+                }
+            }
+            rule(groupId: 'io.netty') {
+                ignoreVersions {
+                    ignoreVersion(type: 'regex', '.*')
+                }
+            }
+        }
+    }
+    ruleSetProcessor.process()
+    ruleSetProcessor.save()
+    System.out.println "${ruleSetProcessor.file.name} was successfully modified"
 }

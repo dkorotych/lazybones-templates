@@ -26,6 +26,6 @@ class ValidateLogbackSupport extends MavenQuickstartTests {
         new File(projectDir, 'src/test/resources/logback-test.xml').exists()
 
         where:
-        [lazybones, version] << getValidVersionMatrixGreaterThen('1.1')
+        [lazybones, version] << getValidVersionMatrixEqualOrGreaterThen('1.1')
     }
 }

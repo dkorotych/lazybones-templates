@@ -2,30 +2,19 @@ package com.github.dkorotych.lazybones.templates.maven
 
 import groovy.util.slurpersupport.GPathResult
 import groovy.xml.MarkupBuilder
-import groovy.xml.XmlUtil
 
 /**
  * @author Dmitry Korotych (dkorotych at gmail dot com)
  */
-class PomProcessor {
+class PomProcessor extends XmlProcessor {
     final GPathResult pom
     boolean processing
-    final String indent
-    XmlSlurper slurper
-    private File pomFile
-    private Writer writer
     private List<Dependency> dependencies
-    private Script script
 
     PomProcessor(List<Dependency> dependencies, Script script) {
+        super(script, 'pom.xml')
         this.dependencies = dependencies
-        this.script = script
-
-        // Read pom.xml
-        slurper = new XmlSlurper(false, false)
-        slurper.setKeepIgnorableWhitespace(true)
-        pomFile = script.fileInProject('pom.xml')
-        pom = slurper.parse(pomFile)
+        this.pom = result
 
         // Any dependency already exists in pom.xml?
         processing = pom.dependencies.'*'.find { dependency ->
@@ -40,14 +29,6 @@ class PomProcessor {
                 println('Attention! You will need to manually remove some duplicate dependencies')
             }
         }
-
-        // Read indent from editor settings file
-        indent = script.readIndentAsString()
-    }
-
-    MarkupBuilder createMarkupBuilder() {
-        writer = new StringWriter()
-        return new MarkupBuilder(new IndentPrinter(writer, indent))
     }
 
     MarkupBuilder addDependencies(MarkupBuilder builder) {
@@ -91,7 +72,7 @@ class PomProcessor {
     void process() {
         if (processing) {
             // Insert new dependencies to pom.xml
-            GPathResult changes = slurper.parseText(writer.toString())
+            GPathResult changes = changes()
             changes.properties.'*'.each {
                 pom.properties << indent
                 pom.properties << it
@@ -135,7 +116,7 @@ class PomProcessor {
 
     void save() {
         if (processing) {
-            XmlUtil.serialize(pom, pomFile.newWriter(script.fileEncoding))
+            super.save()
         }
     }
 }
