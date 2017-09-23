@@ -16,7 +16,6 @@ class MavenWrapper extends MavenQuickstartTests {
         setup:
         createProject(lazybones, version)
         def directory = new File(projectDir, '.mvn/wrapper')
-        def pom = getPom()
 
         expect:
         new File(projectDir, 'mvnw').exists()
@@ -26,7 +25,7 @@ class MavenWrapper extends MavenQuickstartTests {
         assert directory.list({ File dir, String name ->
             return name ==~ /(?i)^maven-wrapper\.(jar|properties)$/
         }).size() == 2
-        assert pom.prerequisites.maven == '3.5.0'
+        assertDependencyByArtifactId(getPom().build.plugins, 'maven-enforcer-plugin')
 
         where:
         [lazybones, version] << getValidVersionMatrixEqualOrGreaterThen('1.4.1')
