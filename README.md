@@ -16,6 +16,8 @@ The current list contains the following templates
 ```bash
 lazybones config add bintrayRepositories dkorotych/lazybones-templates
 ```
+> ###### Note
+> ###### On some systems, after executing this command, the main template repository may disappear. If you encounter this situation, then you can restore the correct operation by adding it to the list of repositories `lazybones config add bintrayRepositories pledbrook/lazybones-templates`
 
 ## How To
 ### Create [Maven] project
