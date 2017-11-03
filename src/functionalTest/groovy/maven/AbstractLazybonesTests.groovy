@@ -41,7 +41,7 @@ abstract class AbstractLazybonesTests extends Specification {
 
     @Memoized
     private String getProjectPathVolume(File directory) {
-        return "${directory.canonicalPath}:/home/lazybones/app".toString()
+        return "${directory.canonicalPath}:/app".toString()
     }
 
     @Memoized

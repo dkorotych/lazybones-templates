@@ -41,7 +41,11 @@ abstract class MavenQuickstartTests extends AbstractLazybonesTests {
         if (localTemplateExists(templateVersion)) {
             commands = ['create', 'maven-quickstart', getLocalTemplateString(templateVersion), '.']
         } else {
-            commands = ['create', getRemoteTemplateString(templateVersion), '.']
+            if (copyOfRemoteTemplate(templateVersion)) {
+                commands = ['create', 'maven-quickstart-template', getLocalTemplateString(templateVersion), '.']
+            } else {
+                commands = ['create', getRemoteTemplateString(templateVersion), '.']
+            }
         }
         addProperties(properties, commands)
         return commands
@@ -136,9 +140,12 @@ abstract class MavenQuickstartTests extends AbstractLazybonesTests {
 
     @MaxMemoized
     private boolean localTemplateExists(String templateVersion) {
-        return new File("${System.getProperty("user.home")}/.lazybones/templates/maven-quickstart-"
-                + "${templateVersion}.zip").
-                exists()
+        return exists('', templateVersion)
+    }
+
+    @MaxMemoized
+    private boolean copyOfRemoteTemplate(String templateVersion) {
+        return exists('-template', templateVersion)
     }
 
     @MaxMemoized
@@ -150,5 +157,10 @@ abstract class MavenQuickstartTests extends AbstractLazybonesTests {
     private String getRemoteTemplateString(String templateVersion) {
         return "https://dl.bintray.com/dkorotych/lazybones-templates/maven-quickstart-template-${templateVersion}.zip".
                 toString()
+    }
+
+    private boolean exists(String templatePart, String templateVersion) {
+        return new File("${System.getProperty("user.home")}/.lazybones/templates/maven-quickstart${templatePart}-${templateVersion}.zip").
+                exists()
     }
 }
