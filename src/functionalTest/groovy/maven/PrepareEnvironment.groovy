@@ -12,12 +12,11 @@ class PrepareEnvironment extends MavenQuickstartTests {
 
     @Unroll
     @Timeout(value = 5, unit = TimeUnit.MINUTES)
-    def "prepare functional tests environment. template(#version)"() {
+    def "prepare functional tests environment. Lazybones #lazybones template(#version)"() {
         setup:
-        String lazybones = SUPPORTED_LAZYBONES_VERSIONS.last()
         createProject(lazybones, version)
 
         where:
-        version << TEMPLATE_VERSIONS
+        [lazybones, version] << getValidVersionMatrix().reverse()
     }
 }
