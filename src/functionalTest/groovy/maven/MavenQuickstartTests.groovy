@@ -10,7 +10,7 @@ abstract class MavenQuickstartTests extends AbstractLazybonesTests {
     protected static final List<String> SUPPORTED_LAZYBONES_VERSIONS = ['0.8.1', '0.8.2', '0.8.3']
     protected static final int CORRECT_LAZYBONES_VERSION_INDEX = SUPPORTED_LAZYBONES_VERSIONS.indexOf('0.8.3')
     protected static final List<String> TEMPLATE_VERSIONS = ['1.0', '1.1', '1.2', '1.2.1', '1.3', '1.3.1', '1.3.2',
-                                                             '1.4', '1.4.1']
+                                                             '1.4', '1.4.1', '1.4.2']
     protected static final int CORRECT_TEMPLATE_VERSION_INDEX = TEMPLATE_VERSIONS.indexOf('1.2.1')
 
     protected static final String LOGBACK_SUPPORT = 'logback-support'
