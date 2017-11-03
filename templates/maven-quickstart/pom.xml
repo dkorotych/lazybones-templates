@@ -31,7 +31,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <maven.compiler.source>{{source}}</maven.compiler.source>
         <maven.compiler.target>{{source}}</maven.compiler.target>
-        <checkstyle.version>8.4</checkstyle.version>
+        <checkstyle.version>{{checkstyleVersion}}</checkstyle.version>
         <checkstyle.plugin.version>2.17</checkstyle.plugin.version>
         <javadoc.plugin.version>3.0.0-M1</javadoc.plugin.version>
         <jxr.plugin.version>2.5</jxr.plugin.version>

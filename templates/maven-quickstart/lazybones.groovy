@@ -137,8 +137,10 @@ if (source < 8) {
 }
 if (properties.useCheckstyleBackport) {
     properties.checkstyleArtifactId = 'checkstyle-backport-jre6'
+    properties.checkstyleVersion = '8.2'
 } else {
     properties.checkstyleArtifactId = 'checkstyle'
+    properties.checkstyleVersion = '8.4'
 }
 
 // Replace template files
