@@ -32,11 +32,11 @@
         <maven.compiler.source>{{source}}</maven.compiler.source>
         <maven.compiler.target>{{source}}</maven.compiler.target>
         <checkstyle.version>{{checkstyleVersion}}</checkstyle.version>
-        <checkstyle.plugin.version>2.17</checkstyle.plugin.version>
-        <javadoc.plugin.version>3.0.0-M1</javadoc.plugin.version>
+        <checkstyle.plugin.version>3.0.0</checkstyle.plugin.version>
+        <javadoc.plugin.version>3.0.0</javadoc.plugin.version>
         <jxr.plugin.version>2.5</jxr.plugin.version>
         <pmd.plugin.version>3.8</pmd.plugin.version>
-        <jacoco.plugin.version>0.7.9</jacoco.plugin.version>
+        <jacoco.plugin.version>0.8.0</jacoco.plugin.version>
         <surefire.report.plugin.version>2.20.1</surefire.report.plugin.version>
         <versions.plugin.version>2.5</versions.plugin.version>
         <findbugs.plugin.version>3.0.5</findbugs.plugin.version>
@@ -147,7 +147,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-site-plugin</artifactId>
-                    <version>3.6</version>
+                    <version>3.7</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
