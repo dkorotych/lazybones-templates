@@ -14,5 +14,5 @@ fi
 
 rm -fr $HOME/.groovy/grapes/
 mkdir -p $HOME/.groovy/grapes/
-rm -fr ../templates/maven-quickstart/.lazybones/repo
-mkdir -p ../templates/maven-quickstart/.lazybones/repo
+rm -fr templates/maven-quickstart/.lazybones/repo
+mkdir -p templates/maven-quickstart/.lazybones/repo
