@@ -16,19 +16,20 @@ class ValidateDefaultValues extends MavenQuickstartTests {
         setup:
         createProject(lazybones, version)
         def pom = getPom()
+        def user = System.getProperty("user.name")
 
         expect:
-        pom.groupId == 'com.github.root'
+        pom.groupId == "com.github.${user}"
         pom.artifactId == 'app'
         pom.version == '0.1-SNAPSHOT'
         pom.packaging == 'jar'
         pom.name == 'App'
         pom.description == 'App'
         pom.inceptionYear == GregorianCalendar.getInstance().get(Calendar.YEAR) as String
-        pom.url == 'https://github.com/root/app'
-        pom.scm.url == 'https://github.com/root/app.git'
-        pom.scm.developerConnection == 'scm:git:git@github.com:root/app.git'
-        pom.issueManagement.url == 'https://github.com/root/app/issues'
+        pom.url == "https://github.com/${user}/app"
+        pom.scm.url == "https://github.com/${user}/app.git"
+        pom.scm.developerConnection == "scm:git:git@github.com:${user}/app.git"
+        pom.issueManagement.url == "https://github.com/${user}/app/issues"
         pom.issueManagement.system == 'GitHub'
         pom.properties.'maven.compiler.source' == '1.8'
         pom.properties.'maven.compiler.target' == '1.8'

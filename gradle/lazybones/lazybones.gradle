@@ -9,17 +9,18 @@ ext {
     }
     executeLazybones = { String javaVersion, String lazybonesVersion, List<String> lazybonesCommands ->
         def directory = Files.createTempDirectory(buildDir.toPath(), "lazybones").toFile()
-        def home = '/root'
         def templates = '/.lazybones/templates'
         def groovy = '/.groovy'
         def maven = '/.m2/repository'
         def userHome = System.getProperty("user.home")
         def commands = ['docker', 'run', '--rm',
+                        '-v', '/etc/group:/etc/group:ro',
+                        '-v', '/etc/passwd:/etc/passwd:ro',
                         '-v', "${directory}:/app",
-                        '-v', "${userHome + templates}:${home + templates}",
-                        '-v', "${userHome + groovy}:${home + groovy}",
-                        '-v', "${userHome + maven}:${home + maven}",
-                        '--user', 'root',
+                        '-v', "${userHome + templates}:${userHome + templates}",
+                        '-v', "${userHome + groovy}:${userHome + groovy}",
+                        '-v', "${userHome + maven}:${userHome + maven}",
+                        '--user', '1000:1000',
                         createTag(javaVersion, lazybonesVersion)]
         lazybonesCommands?.each {
             commands << it

@@ -26,13 +26,17 @@ abstract class AbstractLazybonesTests extends Specification {
             commands << '--tty'
         }
         commands << '-v'
+        commands << '/etc/passwd:/etc/passwd:ro'
+        commands << '-v'
+        commands << '/etc/group:/etc/group:ro'
+        commands << '-v'
         commands << getProjectPathVolume(directory)
         commands << '-v'
         commands << getTemplatesVolume()
         commands << '-v'
         commands << getGroovyCacheVolume()
         commands << '--user'
-        commands << 'root'
+        commands << '1000:1000'
         commands << getImageName(lazybonesVersion, javaSource)
         commands.addAll(lazybonesCommands)
         new ProcessBuilder(commands).
@@ -60,12 +64,13 @@ abstract class AbstractLazybonesTests extends Specification {
     }
 
     private static String createVolume(String path) {
-        File directory = new File("${System.getProperty("user.home")}/$path")
+        def userHome = System.getProperty("user.home")
+        File directory = new File("${userHome}/$path")
         if (!directory.exists()) {
             directory.mkdirs()
             setPermissions(directory)
         }
-        return "${directory.canonicalPath}:/root/$path".toString()
+        return "${directory.canonicalPath}:/${userHome}/$path".toString()
     }
 
     private static void setPermissions(File directory) {
