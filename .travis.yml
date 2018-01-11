@@ -18,4 +18,4 @@ jdk:
   - openjdk7
   - oraclejdk8
   - openjdk8
-script: "./gradlew check testTemplateMavenQuickstart"
+script: "./gradlew clean installAllTemplates check testTemplateMavenQuickstart"
