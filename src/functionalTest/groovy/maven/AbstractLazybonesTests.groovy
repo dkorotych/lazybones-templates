@@ -36,7 +36,7 @@ abstract class AbstractLazybonesTests extends Specification {
         commands << '-v'
         commands << getGroovyCacheVolume()
         commands << '--user'
-        commands << '1000:1000'
+        commands << findUserInformation()
         commands << getImageName(lazybonesVersion, javaSource)
         commands.addAll(lazybonesCommands)
         new ProcessBuilder(commands).
@@ -77,5 +77,14 @@ abstract class AbstractLazybonesTests extends Specification {
         directory.setReadable(true, false)
         directory.setWritable(true, false)
         directory.setExecutable(true, false)
+    }
+
+    @Memoized
+    private static String findUserInformation() {
+        StringWriter userWriter = new StringWriter();
+        "id -u".execute().waitForProcessOutput(userWriter, System.err)
+        userWriter.append(':')
+        "id -g".execute().waitForProcessOutput(userWriter, System.err)
+        return userWriter.toString().replace('\n', '')
     }
 }

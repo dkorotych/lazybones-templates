@@ -8,6 +8,12 @@ ext {
         supportedJavaVersions = 7..8
     }
     executeLazybones = { String javaVersion, String lazybonesVersion, List<String> lazybonesCommands ->
+        StringWriter userWriter = new StringWriter();
+        "id -u".execute().waitForProcessOutput(userWriter, System.err)
+        userWriter.append(':')
+        "id -g".execute().waitForProcessOutput(userWriter, System.err)
+        def user = userWriter.toString().replace('\n', '')
+
         def directory = Files.createTempDirectory(buildDir.toPath(), "lazybones").toFile()
         def templates = '/.lazybones/templates'
         def groovy = '/.groovy'
@@ -20,7 +26,7 @@ ext {
                         '-v', "${userHome + templates}:${userHome + templates}",
                         '-v', "${userHome + groovy}:${userHome + groovy}",
                         '-v', "${userHome + maven}:${userHome + maven}",
-                        '--user', '1000:1000',
+                        '--user', user,
                         createTag(javaVersion, lazybonesVersion)]
         lazybonesCommands?.each {
             commands << it
