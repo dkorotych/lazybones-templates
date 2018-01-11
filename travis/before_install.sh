@@ -11,3 +11,6 @@ if [ $TRAVIS_JDK_VERSION == "openjdk7" ]; then
     sudo perl -pi.bak -e 's/^(security\.provider\.)([0-9]+)/$1.($2+1)/ge' /etc/java-7-openjdk/security/java.security
     echo "security.provider.1=org.bouncycastle.jce.provider.BouncyCastleProvider" | sudo tee -a /etc/java-7-openjdk/security/java.security
 fi
+
+rm -fr $HOME/.groovy/grapes/
+rm -fr ../templates/maven-quickstart/.lazybones/repo
