@@ -23,6 +23,9 @@ apply from: "$rootDir/gradle/lazybones/lazybones.gradle"
 apply from: "$rootDir/gradle/functional-test.gradle"
 apply plugin: 'maven-publish'
 
+sourceCompatibility = JavaVersion.VERSION_1_7
+targetCompatibility = JavaVersion.VERSION_1_7
+
 afterReleaseBuild.dependsOn publishAllTemplates
 
 release {

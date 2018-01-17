@@ -2,6 +2,7 @@ package maven
 
 import spock.lang.Timeout
 import spock.lang.Unroll
+import spock.util.environment.Jvm
 
 import java.util.concurrent.TimeUnit
 
@@ -125,6 +126,10 @@ class ValidateVertXSupport extends MavenQuickstartTests {
     }
 
     private List getTestData() {
-        return getValidVersionMatrixEqualOrGreaterThen('1.4')
+        if (Jvm.current.isJava8Compatible()) {
+            return getValidVersionMatrixEqualOrGreaterThen('1.4')
+        } else {
+            return getValidVersionMatrixEqualOrGreaterThen('1.4.3')
+        }
     }
 }

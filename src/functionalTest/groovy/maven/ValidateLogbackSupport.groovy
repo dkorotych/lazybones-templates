@@ -2,6 +2,7 @@ package maven
 
 import spock.lang.Timeout
 import spock.lang.Unroll
+import spock.util.environment.Jvm
 
 import java.util.concurrent.TimeUnit
 
@@ -26,6 +27,10 @@ class ValidateLogbackSupport extends MavenQuickstartTests {
         new File(projectDir, 'src/test/resources/logback-test.xml').exists()
 
         where:
-        [lazybones, version] << getValidVersionMatrixEqualOrGreaterThen('1.1')
+        [lazybones, version] << getTestData()
+    }
+
+    private static getTestData() {
+        Jvm.current.isJava8Compatible() ? getValidVersionMatrixEqualOrGreaterThen('1.1') : getValidVersionMatrixEqualOrGreaterThen('1.4.3')
     }
 }

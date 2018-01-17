@@ -1,8 +1,10 @@
 package maven
 
 import org.junit.Assert
+import spock.lang.Requires
 import spock.lang.Timeout
 import spock.lang.Unroll
+import spock.util.environment.Jvm
 
 import java.nio.file.FileVisitResult
 import java.nio.file.Files
@@ -32,6 +34,7 @@ class EquivalentGeneration extends MavenQuickstartTests {
 
     @Unroll
     @Timeout(value = 5, unit = TimeUnit.MINUTES)
+    @Requires({Jvm.current.isJava8Compatible()})
     def "logback support by template(1.0.1) should be equals logback support by template(1.0.2). Lazybones(#lazybones)"() {
         setup:
         File directoryFor132 = createProjectByTemplate(lazybones, '1.3.2', true)
