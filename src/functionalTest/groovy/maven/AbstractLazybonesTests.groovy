@@ -70,7 +70,7 @@ abstract class AbstractLazybonesTests extends Specification {
             directory.mkdirs()
             setPermissions(directory)
         }
-        return "${directory.canonicalPath}:/${userHome}/$path".toString()
+        return "${directory.canonicalPath}:${userHome}/$path".toString()
     }
 
     private static void setPermissions(File directory) {
