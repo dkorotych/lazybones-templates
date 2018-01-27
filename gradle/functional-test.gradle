@@ -62,5 +62,5 @@ check.dependsOn functionalTest
 
 dependencies {
     functionalTestCompile('org.spockframework:spock-core:1.1-groovy-2.4')
-    functionalTestCompile('org.assertj:assertj-core:3.9.0')
+    functionalTestCompile('org.assertj:assertj-core:2.9.0')
 }
