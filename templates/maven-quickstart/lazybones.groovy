@@ -1,17 +1,9 @@
 @Grab(group = "com.squareup.okhttp3", module = "okhttp", version = "3.4.1")
-@Grab(group = "uk.co.cacoethes", module = "groovy-handlebars-engine", version = "0.2")
-@Grab(group = "ch.qos.logback", module = "logback-classic", version = "1.1.7")
 
-import ch.qos.logback.classic.LoggerContext
-import ch.qos.logback.classic.joran.JoranConfigurator
-import ch.qos.logback.core.util.StatusPrinter
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import org.slf4j.LoggerFactory
-import uk.co.cacoethes.handlebars.HandlebarsTemplateEngine
 import uk.co.cacoethes.util.NameType
 
-import java.nio.charset.StandardCharsets
 import java.text.SimpleDateFormat
 
 def script = new GroovyScriptEngine(".lazybones").with {
@@ -24,31 +16,7 @@ def askChoices(String message, String defaultValue, List<String> answers, String
         defaultValue, answers, property, false)
 }
 
-// Disable debug messages from HandlebarsTemplateEngine
-context = (LoggerContext) LoggerFactory.getILoggerFactory();
-new ByteArrayInputStream(
-"""
-<configuration>
-  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
-    <encoder>
-      <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
-    </encoder>
-  </appender>
-  <root level="INFO">
-    <appender-ref ref="STDOUT" />
-  </root>
-</configuration>
-""".getBytes(StandardCharsets.UTF_8)).withStream {configStream ->
-        context.reset();
-        configurator = new JoranConfigurator();
-        configurator.setContext(context);
-        configurator.doConfigure(configStream);
-    }
-StatusPrinter.printInCaseOfErrorsOrWarnings(context);
-
-// Replace standard template engine to Handlebars
-registerDefaultEngine new HandlebarsTemplateEngine()
-
+registerHandlebarsAsDefaultTemplateEngine()
 String username = System.properties['user.name']
 
 Map properties = [:]

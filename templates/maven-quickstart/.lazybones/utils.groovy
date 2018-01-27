@@ -1,5 +1,15 @@
+@Grab(group = "ch.qos.logback", module = "logback-classic", version = "1.1.7")
+@Grab(group = "uk.co.cacoethes", module = "groovy-handlebars-engine", version = "0.2")
+
 import org.apache.commons.io.FileUtils
 
+import ch.qos.logback.classic.LoggerContext
+import ch.qos.logback.classic.joran.JoranConfigurator
+import ch.qos.logback.core.util.StatusPrinter
+import org.slf4j.LoggerFactory
+import uk.co.cacoethes.handlebars.HandlebarsTemplateEngine
+
+import java.nio.charset.StandardCharsets
 import java.nio.file.FileVisitResult
 import java.nio.file.FileVisitor
 import java.nio.file.Files
@@ -35,7 +45,7 @@ class Utils {
         String answer = ask("${message} Positive answer is one of \'${positiveAnswer.join('\', \'')}\' [${defaultValue}]: ", defaultValue, property).toLowerCase()
         return positiveAnswer.find {
             return it == answer
-        }
+        } != null
     }
 
     def askPredefined(String message, String defaultValue, List<String> answers, String property,
@@ -113,5 +123,32 @@ class Utils {
                 }
             })
         }
+    }
+
+    void registerHandlebarsAsDefaultTemplateEngine() {
+        // Disable debug messages from HandlebarsTemplateEngine
+        def context = (LoggerContext) LoggerFactory.getILoggerFactory();
+        new ByteArrayInputStream(
+            """
+<configuration>
+  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+      <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+    </encoder>
+  </appender>
+  <root level="INFO">
+    <appender-ref ref="STDOUT" />
+  </root>
+</configuration>
+""".getBytes(StandardCharsets.UTF_8)).withStream { configStream ->
+            context.reset();
+            def configurator = new JoranConfigurator();
+            configurator.setContext(context);
+            configurator.doConfigure(configStream);
+        }
+        StatusPrinter.printInCaseOfErrorsOrWarnings(context);
+
+        // Replace standard template engine to Handlebars
+        registerDefaultEngine new HandlebarsTemplateEngine()
     }
 }
