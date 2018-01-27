@@ -10,6 +10,7 @@ The current list contains the following templates
 * [maven-quickstart]: Quick start a base [Maven] application
   * Additional support for [logback]
   * Additional support for [vert.x]
+  * Generate simple [travis-ci] configuration
   
 ## Installation
 
@@ -33,6 +34,10 @@ lazybones generate logback-support
 ```bash
 lazybones generate vertx-support
 ```
+* [travis-ci]
+```bash
+lazybones generate travis
+```
 
 [1]: https://github.com/pledbrook/lazybones/wiki/Template-developers-guide
 [Lazybones]: http://github.com/pledbrook/lazybones
@@ -41,3 +46,4 @@ lazybones generate vertx-support
 [Maven]: http://maven.apache.org
 [logback]: http://logback.qos.ch
 [vert.x]: http://vertx.io
+[travis-ci]: https://travis-ci.org
