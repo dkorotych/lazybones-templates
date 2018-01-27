@@ -1,0 +1,10 @@
+language: java
+cache:
+  directories:
+    - $HOME/.m2/repository/
+jdk:
+  - oraclejdk8
+  - openjdk8
+script: "./mvnw package jacoco:report"
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
