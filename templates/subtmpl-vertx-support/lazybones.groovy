@@ -12,12 +12,12 @@ def script = new GroovyScriptEngine('.lazybones').with {
 this.metaClass.mixin script
 
 def versions = [
-        'vertx'    : '3.5.0',
-        'netty'    : '4.1.15.Final',
-        'shade'    : '3.1.0',
+        'vertx'    : '3.5.3',
+        'netty'    : '4.1.19.Final',
+        'shade'    : '3.1.1',
         'exec'     : '1.6.0',
         'javassist': '3.12.1.GA',
-        'os'       : '1.5.0.Final'
+        'os'       : '1.6.0'
 ]
 def parameters = binding.variables.parentParams
 def packageName = parameters.packageName
@@ -198,6 +198,11 @@ if (pomProcessor.processing) {
                 }
             }
             rule(groupId: 'com.fasterxml.jackson.core', artifactId: 'jackson-databind') {
+                ignoreVersions {
+                    ignoreVersion(type: 'regex', '.*')
+                }
+            }
+            rule(groupId: 'com.fasterxml.jackson.core', artifactId: 'jackson-annotations') {
                 ignoreVersions {
                     ignoreVersion(type: 'regex', '.*')
                 }
