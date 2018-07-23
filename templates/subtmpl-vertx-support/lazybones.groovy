@@ -202,6 +202,11 @@ if (pomProcessor.processing) {
                     ignoreVersion(type: 'regex', '.*')
                 }
             }
+            rule(groupId: 'com.fasterxml.jackson.core', artifactId: 'jackson-annotations') {
+                ignoreVersions {
+                    ignoreVersion(type: 'regex', '.*')
+                }
+            }
             rule(groupId: 'io.netty') {
                 ignoreVersions {
                     ignoreVersion(type: 'regex', '.*')
